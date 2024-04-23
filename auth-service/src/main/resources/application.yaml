@@ -1,0 +1,19 @@
+spring:
+  application:
+    name=auth-service
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driverClassName: org.postgresql.Driver
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/trello_user
+    username: postgres
+    password: postgres
+
+server:
+  port: 8081
+
+

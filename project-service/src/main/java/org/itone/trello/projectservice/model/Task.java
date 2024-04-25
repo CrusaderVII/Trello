@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,7 +19,7 @@ public class Task {
     @ManyToMany
     @JoinTable(name = "tasks_and_users",
             joinColumns = @JoinColumn(name = "task_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_name"))
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
     @ManyToOne
     @JoinColumn(name = "FK_board_id", nullable = false)
@@ -55,6 +56,26 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void addUser(User user) {
+        if (this.users == null) this.users = new HashSet<>();
+        this.users.add(user);
+
+        if (user.getTasks() == null) user.setTasks(new HashSet<>());
+        user.getTasks().add(this);
+    }
+
+    public void removeUser(long id) {
+        User user = users.stream()
+                .filter(currentUser -> currentUser.getId()==id)
+                .findFirst()
+                .orElse(null);
+
+        if(user != null) {
+            this.users.remove(user);
+            user.getTasks().remove(this);
+        }
     }
 
     @Override

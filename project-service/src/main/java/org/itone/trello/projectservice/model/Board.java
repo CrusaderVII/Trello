@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -50,6 +51,15 @@ public class Board {
 
     public void setDesk(Desk desk) {
         this.desk = desk;
+    }
+
+    public void addTask(Task task) {
+        //If it is 1st task we should create a new HashSet before adding new task
+        if (this.tasks == null) this.tasks = new HashSet<>();
+        this.tasks.add(task);
+
+        //Set to added task this project
+        task.setBoard(this);
     }
 
     @Override

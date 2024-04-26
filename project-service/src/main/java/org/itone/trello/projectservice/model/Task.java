@@ -58,6 +58,22 @@ public class Task {
         this.description = description;
     }
 
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
     public void addUser(User user) {
         if (this.users == null) this.users = new HashSet<>();
         this.users.add(user);

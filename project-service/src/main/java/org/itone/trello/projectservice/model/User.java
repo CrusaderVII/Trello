@@ -16,12 +16,9 @@ public class User {
     @Column(name = "user_name", nullable = false)
     private String name;
 
-    //TODO: validate email
     @Column(name = "user_email", nullable = false)
     private String email;
 
-    //TODO: validate password
-    //TODO: store encrypted password
     @Column(name = "user_password", nullable = false)
     private String password;
     @ManyToMany(mappedBy = "users")

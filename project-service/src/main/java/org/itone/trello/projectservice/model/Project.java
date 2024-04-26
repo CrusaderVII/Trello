@@ -17,11 +17,13 @@ public class Project {
     @Column(name = "project_description", length = 500)
     private String description;
 
+    //TODO: delete connection between project and user before deleting user/project
     @ManyToMany
     @JoinTable(name = "projects_and_users",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     Set<User> users;
+    //TODO: cascade delete boards, tasks and connections between users and tasks
     @OneToMany(mappedBy = "project")
     Set<Desk> desks;
 
@@ -67,23 +69,78 @@ public class Project {
     }
 
     public void addUser(User user) {
+        //If it is 1st user we should create a new HashSet before adding new user
         if (this.users == null) this.users = new HashSet<>();
         this.users.add(user);
 
+        //If it is 1st project of a user we also should create a new HashSet before adding this project
         if (user.getProjects() == null) user.setProjects(new HashSet<>());
         user.getProjects().add(this);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public void removeUser(long id) {
+        //Check set of user contains user with specified id
         User user = users.stream()
                 .filter(currentUser -> currentUser.getId()==id)
                 .findFirst()
                 .orElse(null);
 
+        //Only if user present and not null we can remove him from set of users
         if(user != null) {
             this.users.remove(user);
             user.getProjects().remove(this);
         }
+    }
+
+    public void addDesk(Desk desk) {
+        //If it is 1st desk we should create a new HashSet before adding new desk
+        if (this.desks == null) this.desks = new HashSet<>();
+        this.desks.add(desk);
+
+        //Set to added desk this project
+        desk.setProject(this);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import org.itone.trello.projectservice.exception.project.NoSuchProjectException;
+import org.itone.trello.projectservice.model.Desk;
 import org.itone.trello.projectservice.model.Project;
 import org.itone.trello.projectservice.model.User;
 import org.itone.trello.projectservice.repository.ProjectRepository;
@@ -30,6 +31,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<User> getAllUsersOnProject(long projectId) {
         return projectRepository.findAllUsersOnProject(projectId);
+    }
+
+    @Override
+    public List<Desk> getAllDesksOnProject(long projectId) {
+        return projectRepository.findAllDesksOnProject(projectId);
     }
 
     @Override

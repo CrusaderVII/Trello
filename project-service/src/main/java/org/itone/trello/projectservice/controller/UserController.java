@@ -19,7 +19,9 @@ public class UserController {
     public UserController(UserServiceImpl userServiceImpl) {
         this.userServiceImpl = userServiceImpl;
     }
-
+    //TODO: implement adding user to project ???
+    //TODO: list all projects of user
+    //TODO: auth controller
     @GetMapping("/get/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable long id) {
         User user = userServiceImpl.getUserById(id);
@@ -40,6 +42,8 @@ public class UserController {
 
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
+
+    //TODO: InvalidDataException handler. What is right way to implement it???
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody User user) {
         User savedUser = userServiceImpl.saveUser(user);
@@ -55,7 +59,7 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable long id) {
         userServiceImpl.deleteUser(id);
 
-        return new ResponseEntity<String>("User with id "+id+" deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>("User with id "+id+" deleted successfully", HttpStatus.OK);
     }
 
 }

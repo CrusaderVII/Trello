@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("trello/api/v1/project")
@@ -29,6 +31,8 @@ public class ProjectController {
         this.deskServiceImpl = deskServiceImpl;
     }
 
+    //TODO: try to change way of creating new desks, boards and tasks (noy inside parent controller)
+    //TODO: ask about using @Transactional on controllers about remove and save entities
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable long id) {
         Project project = projectServiceImpl.getProjectById(id);
@@ -55,17 +59,21 @@ public class ProjectController {
     }
 
     @GetMapping("get/{id}/users")
-    public ResponseEntity<List<UserDTO>> getUsersOnProject(@PathVariable long id) {
-        List<User> users = projectServiceImpl.getAllUsersOnProject(id);
-        List<UserDTO> userDTOs = users.stream()
-                .map(user -> new UserDTO(user.getId(), user.getName(), user.getEmail()))
-                .toList();
+    public ResponseEntity<Set<UserDTO>> getUsersOnProject(@PathVariable long id) {
+
+        Project project = projectServiceImpl.getProjectById(id);
+
+        Set<UserDTO> userDTOs = project.getUsers().stream()
+                .map(user -> new UserDTO(user.getId(),
+                                         user.getName(),
+                                         user.getEmail()))
+                .collect(Collectors.toSet());
 
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
 
     @GetMapping("get/{id}/desks")
-    public ResponseEntity<List<DeskDTO>> getDesksOnProject(@PathVariable long id) {
+    public ResponseEntity<Set<DeskDTO>> getDesksOnProject(@PathVariable long id) {
         //Get project from projectServiceImpl by id
         Project project = projectServiceImpl.getProjectById(id);
         //Create projectDTO from project
@@ -73,12 +81,12 @@ public class ProjectController {
                                                project.getName(),
                                                project.getDescription());
 
-        //Get list of desks on project by project id using projectServiceImpl
-        List<Desk> desks = projectServiceImpl.getAllDesksOnProject(id);
         //Generate list of deskDTO in stream of gotten desks
-        List<DeskDTO> deskDTOs = desks.stream()
-                .map(desk -> new DeskDTO(desk.getId(), desk.getName(), projectDTO))
-                .toList();
+        Set<DeskDTO> deskDTOs = project.getDesks().stream()
+                .map(desk -> new DeskDTO(desk.getId(),
+                                         desk.getName(),
+                                         projectDTO))
+                .collect(Collectors.toSet());
 
         return new ResponseEntity<>(deskDTOs, HttpStatus.OK);
     }
@@ -138,11 +146,28 @@ public class ProjectController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProject(@PathVariable long id) {
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<String> removeProject(@PathVariable long id) {
+        //TODO: use "delete" when deleting entity and use "remove" when deleting connections between entities
         projectServiceImpl.deleteProject(id);
 
         return new ResponseEntity<String>("Project with "+id+" deleted successfully", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/remove/{projectId}/user")
+    public ResponseEntity<String> removeUserFromProject(@PathVariable long projectId,
+                                                        @RequestParam long userId) {
+
+        Project project = projectServiceImpl.getProjectById(projectId);
+        User user = userServiceImpl.getUserById(userId);
+
+        project.removeUser(user.getId());
+
+        projectServiceImpl.saveProject(project);
+        userServiceImpl.updateUser(user);
+
+        return new ResponseEntity<>("User with id "+userId+" successfully removed from project "+projectId,
+                HttpStatus.OK);
     }
 
 }

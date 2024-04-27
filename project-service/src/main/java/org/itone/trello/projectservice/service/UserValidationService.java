@@ -4,6 +4,7 @@ import org.itone.trello.projectservice.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.exception.user.InvalidEmailException;
 import org.itone.trello.projectservice.exception.user.InvalidPasswordException;
 import org.itone.trello.projectservice.model.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ public class UserValidationService {
 
     private static final Pattern EMAIL_FORMAT_PATTERN = Pattern.compile("^.+@[a-z]+\\.(com|ru)$");
     private static final Pattern PASSWORD_FORMAT_PATTERN = Pattern.compile("^[a-zA-z0-9]{5,20}$");
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     //return true only in case when both email and password are valid
     public boolean validate(User user) throws InvalidDataException {
@@ -31,5 +33,9 @@ public class UserValidationService {
     private boolean validatePassword(String password) throws InvalidPasswordException{
         if (PASSWORD_FORMAT_PATTERN.matcher(password).matches()) return true;
         else throw new InvalidPasswordException();
+    }
+
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return encoder.matches(rawPassword, encodedPassword);
     }
 }

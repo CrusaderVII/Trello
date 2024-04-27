@@ -17,7 +17,7 @@ public class Desk {
     @ManyToOne
     @JoinColumn(name = "FK_project_id", nullable = false)
     private Project project;
-    @OneToMany(mappedBy = "desk")
+    @OneToMany(mappedBy = "desk", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Board> boards;
 
     public Desk(long id, String name) {

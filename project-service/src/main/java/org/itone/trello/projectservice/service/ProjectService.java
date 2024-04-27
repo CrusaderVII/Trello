@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface ProjectService {
     Project getProjectById(long id);
-    List<User> getAllUsersOnProject(long projectId);
-    List<Desk> getAllDesksOnProject(long projectId);
     List<Project> getAllProjects();
     Project saveProject(Project entity);
     void deleteProject(long id);

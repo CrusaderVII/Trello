@@ -24,7 +24,7 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     Set<User> users;
     //TODO: cascade delete boards, tasks and connections between users and tasks
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Set<Desk> desks;
 
     public Project(long id, String name, String description) {
@@ -68,6 +68,14 @@ public class Project {
         this.users = users;
     }
 
+    public Set<Desk> getDesks() {
+        return desks;
+    }
+
+    public void setDesks(Set<Desk> desks) {
+        this.desks = desks;
+    }
+
     public void addUser(User user) {
         //If it is 1st user we should create a new HashSet before adding new user
         if (this.users == null) this.users = new HashSet<>();
@@ -77,48 +85,6 @@ public class Project {
         if (user.getProjects() == null) user.setProjects(new HashSet<>());
         user.getProjects().add(this);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public void removeUser(long id) {
         //Check set of user contains user with specified id
@@ -142,6 +108,8 @@ public class Project {
         //Set to added desk this project
         desk.setProject(this);
     }
+
+    //TODO: remove desk
 
     @Override
     public String toString() {

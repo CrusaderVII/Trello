@@ -29,16 +29,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<User> getAllUsersOnProject(long projectId) {
-        return projectRepository.findAllUsersOnProject(projectId);
-    }
-
-    @Override
-    public List<Desk> getAllDesksOnProject(long projectId) {
-        return projectRepository.findAllDesksOnProject(projectId);
-    }
-
-    @Override
     public Project saveProject(Project entity) {
         return projectRepository.save(entity);
     }

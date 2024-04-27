@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("trello/api/v1/board")
@@ -26,26 +28,24 @@ public class BoardController {
     @GetMapping("/get/{id}")
     public ResponseEntity<BoardDTO> getBoardById(@PathVariable long id) {
         Board board = boardServiceImpl.getBoardById(id);
-        Desk desk = boardServiceImpl.getDeskOfBoard(id);
 
         return new ResponseEntity<>(new BoardDTO(
                 board.getId(),
                 board.getName(),
-                desk.getName()),
+                board.getDesk().getName()),
                 HttpStatus.OK);
     }
 
     @GetMapping("get/{id}/tasks")
-    public ResponseEntity<List<TaskDTO>> getTasksOnBoard(@PathVariable long id) {
+    public ResponseEntity<Set<TaskDTO>> getTasksOnBoard(@PathVariable long id) {
         Board board = boardServiceImpl.getBoardById(id);
-        List<Task> tasks = boardServiceImpl.getAllTasksOnBoard(id);
 
-        List<TaskDTO> taskDTOs = tasks.stream()
+        Set<TaskDTO> taskDTOs = board.getTasks().stream()
                 .map(task -> new TaskDTO(task.getId(),
                                          task.getName(),
                                          task.getDescription(),
                                          board.getName()))
-                .toList();
+                .collect(Collectors.toSet());
 
         return new ResponseEntity<>(taskDTOs, HttpStatus.OK);
     }

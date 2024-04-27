@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface BoardService {
     Board getBoardById(long id);
-    Desk getDeskOfBoard(long boardId);
-    List<Task> getAllTasksOnBoard(long boardId);
     Board saveBoard(Board entity);
     void deleteBoard(long id);
 }

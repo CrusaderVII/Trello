@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.service.impl;
 
 import org.itone.trello.projectservice.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.exception.user.NoSuchUserException;
+import org.itone.trello.projectservice.exception.user.WrongPasswordException;
 import org.itone.trello.projectservice.model.User;
 import org.itone.trello.projectservice.repository.UserRepository;
 import org.itone.trello.projectservice.service.UserService;
@@ -23,10 +24,20 @@ public class UserServiceImpl implements UserService {
         this.encoder = new BCryptPasswordEncoder(5);
     }
 
+    //TODO: add throws declaration to all getById methods in all serviceImpls
     @Override
-    public User getUserById(long id) {
+    public User getUserById(long id) throws NoSuchUserException{
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchUserException("id "+id));
+    }
+
+    @Override
+    public User authUser(String email, String rawPassword) throws NoSuchUserException, WrongPasswordException{
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchUserException("email "+email));
+
+        if (encoder.matches(rawPassword, user.getPassword())) return user;
+        else throw new WrongPasswordException();
     }
 
     @Override

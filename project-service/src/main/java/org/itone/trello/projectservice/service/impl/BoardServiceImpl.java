@@ -25,16 +25,6 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Desk getDeskOfBoard(long boardId) {
-        return boardRepository.findDeskOfBoard(boardId);
-    }
-
-    @Override
-    public List<Task> getAllTasksOnBoard(long boardId) {
-        return boardRepository.findAllTasksOnBoard(boardId);
-    }
-
-    @Override
     public Board saveBoard(Board entity) {
         return boardRepository.save(entity);
     }

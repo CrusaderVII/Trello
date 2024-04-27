@@ -17,7 +17,7 @@ public class Board {
     @ManyToOne
     @JoinColumn(name = "FK_desk_id", nullable = false)
     private Desk desk;
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Task> tasks;
 
     public Board(long id, String name, Desk desk) {
@@ -53,6 +53,14 @@ public class Board {
         this.desk = desk;
     }
 
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
+    }
+
     public void addTask(Task task) {
         //If it is 1st task we should create a new HashSet before adding new task
         if (this.tasks == null) this.tasks = new HashSet<>();
@@ -61,6 +69,8 @@ public class Board {
         //Set to added task this project
         task.setBoard(this);
     }
+
+    //TODO: remove task
 
     @Override
     public String toString() {

@@ -16,7 +16,8 @@ public class User {
     @Column(name = "user_name", nullable = false)
     private String name;
 
-    @Column(name = "user_email", nullable = false)
+    //TODO: study sql indexes and implement them
+    @Column(name = "user_email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "user_password", nullable = false)
@@ -99,7 +100,6 @@ public class User {
 
         if(project != null) {
             this.projects.remove(project);
-            project.getUsers().remove(this);
         }
     }
 

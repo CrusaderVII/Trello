@@ -1,5 +1,6 @@
 package org.itone.trello.projectservice.service.impl;
 
+import org.itone.trello.projectservice.exception.task.NoSuchTaskException;
 import org.itone.trello.projectservice.model.Board;
 import org.itone.trello.projectservice.model.Task;
 import org.itone.trello.projectservice.model.User;
@@ -20,22 +21,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task getTaskById(long id) {
-        return null;
-    }
-
-    @Override
-    public List<User> getAllUsersOnTask(long projectId) {
-        return null;
-    }
-
-    @Override
-    public Board getBoardOfTasks(long taskId) {
-        return null;
-    }
-
-    @Override
-    public List<Task> getAllTasks() {
-        return null;
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new NoSuchTaskException("id "+id));
     }
 
     @Override
@@ -44,12 +31,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(Task oldEntity) {
-        return null;
-    }
-
-    @Override
     public void deleteTask(long id) {
-
+        taskRepository.deleteById(id);
     }
 }

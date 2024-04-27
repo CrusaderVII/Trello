@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import org.itone.trello.projectservice.exception.desk.NoSuchDeskException;
+import org.itone.trello.projectservice.model.Board;
 import org.itone.trello.projectservice.model.Desk;
 import org.itone.trello.projectservice.repository.DeskRepository;
 import org.itone.trello.projectservice.service.DeskService;
@@ -20,11 +21,6 @@ public class DeskServiceImpl implements DeskService {
     public Desk getDeskById(long id) {
         return deskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchDeskException("id "+id));
-    }
-
-    @Override
-    public List<Desk> getAllDesks() {
-        return deskRepository.findAll();
     }
 
     @Override

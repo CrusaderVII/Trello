@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("trello/api/v1/desk")
@@ -40,21 +42,19 @@ public class DeskController {
                 projectDTO),
                 HttpStatus.OK);
     }
-//    @GetMapping("/get/all")
-//    public ResponseEntity<List<DeskDTO>> getAllDesks() {
-//        List<Desk> desks = deskServiceImpl.getAllDesks();
-//        ProjectDTO projectDTO = new ProjectDTO(desks.get(0).getProject().getId(),
-//                                               desks.get(0).getProject().getName(),
-//                                               desks.get(0).getProject().getDescription());
-//
-//        List<DeskDTO> deskDTOs = desks.stream()
-//                .map(desk -> new DeskDTO(desk.getId(), desk.getName(), projectDTO))
-//                .toList();
-//
-//        return new ResponseEntity<>(deskDTOs, HttpStatus.OK);
-//    }
+    @GetMapping("/get/{deskId}/boards")
+    public ResponseEntity<Set<BoardDTO>> getAllBoards(@PathVariable long deskId) {
+        Desk desk = deskServiceImpl.getDeskById(deskId);
 
-    //TODO: create controller to see all boards of this desk
+        Set<BoardDTO> boardDTOs = desk.getBoards().stream()
+                .map(board -> new BoardDTO(board.getId(),
+                                           board.getName(),
+                                           desk.getName()))
+                .collect(Collectors.toSet());
+
+        return new ResponseEntity<>(boardDTOs, HttpStatus.OK);
+    }
+
     @PostMapping("add/board")
     public ResponseEntity<BoardDTO> addUserToProject(@RequestParam long deskId,
                                                      @RequestBody Board board) {

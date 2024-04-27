@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserService{
     User getUserById(long id);
+    User authUser(String email, String rawPassword) ;
     List<User> getAllUsers();
     User saveUser(User entity);
     User updateUser(User entity);

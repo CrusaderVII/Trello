@@ -3,6 +3,7 @@ package org.itone.trello.projectservice.model;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -12,7 +13,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true, name = "user_id", updatable = false)
     private long id;
-    //TODO: validate name
+
     @Column(name = "user_name", nullable = false)
     private String name;
 
@@ -101,6 +102,19 @@ public class User {
         if(project != null) {
             this.projects.remove(project);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.itone.trello.projectservice.model;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -70,6 +71,19 @@ public class Desk {
     public void removeBoard(Board board) {
         if (boards == null) return;
         boards.remove(board);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Desk desk = (Desk) o;
+        return id == desk.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.itone.trello.projectservice.model;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -17,13 +18,12 @@ public class Project {
     @Column(name = "project_description", length = 500)
     private String description;
 
-    //TODO: delete connection between project and user before deleting user/project
+    //I chose Set instead of List, because, as I've read, Hibernate works with Lists inefficiently
     @ManyToMany
     @JoinTable(name = "projects_and_users",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     Set<User> users;
-    //TODO: cascade delete boards, tasks and connections between users and tasks
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Set<Desk> desks;
 
@@ -109,7 +109,18 @@ public class Project {
         desk.setProject(this);
     }
 
-    //TODO: remove desk
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return id == project.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

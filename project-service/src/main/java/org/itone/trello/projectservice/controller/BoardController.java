@@ -20,6 +20,8 @@ public class BoardController {
     private final BoardServiceImpl boardServiceImpl;
     private final TaskServiceImpl taskServiceImpl;
 
+    //TODO: study pageable in jpa*
+    //TODO: create class Message for responding in delete controllers if needed???
     public BoardController(BoardServiceImpl boardServiceImpl, TaskServiceImpl taskServiceImpl) {
         this.boardServiceImpl = boardServiceImpl;
         this.taskServiceImpl = taskServiceImpl;
@@ -70,5 +72,13 @@ public class BoardController {
                                                 task.getDescription(),
                                                 board.getName()), HttpStatus.OK);
 
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> deleteBoard (@PathVariable long id) {
+
+        boardServiceImpl.deleteBoard(id);
+
+        return new ResponseEntity<>("Board with "+id+" deleted successfully", HttpStatus.OK);
     }
 }

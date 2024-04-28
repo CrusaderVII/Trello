@@ -78,6 +78,6 @@ public class DeskController {
     public ResponseEntity<String> deleteDesk(@PathVariable long id) {
         deskServiceImpl.deleteDesk(id);
 
-        return new ResponseEntity<String>("Desk with id "+id+" deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Desk with id "+id+" deleted successfully", HttpStatus.OK);
     }
 }

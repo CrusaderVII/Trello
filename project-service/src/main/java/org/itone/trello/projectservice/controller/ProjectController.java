@@ -31,8 +31,8 @@ public class ProjectController {
         this.deskServiceImpl = deskServiceImpl;
     }
 
-    //TODO: try to change way of creating new desks, boards and tasks (noy inside parent controller)
-    //TODO: ask about using @Transactional on controllers about remove and save entities
+    //TODO: try to change way of creating new desks, boards and tasks (not inside parent controller)
+    //TODO: ask about using @Transactional on controllers to remove and save entities???
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable long id) {
         Project project = projectServiceImpl.getProjectById(id);
@@ -146,9 +146,8 @@ public class ProjectController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping("/remove/{id}")
-    public ResponseEntity<String> removeProject(@PathVariable long id) {
-        //TODO: use "delete" when deleting entity and use "remove" when deleting connections between entities
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteProject(@PathVariable long id) {
         projectServiceImpl.deleteProject(id);
 
         return new ResponseEntity<String>("Project with "+id+" deleted successfully", HttpStatus.OK);

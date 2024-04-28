@@ -5,9 +5,11 @@ import org.itone.trello.projectservice.dto.DeskDTO;
 import org.itone.trello.projectservice.dto.ProjectDTO;
 import org.itone.trello.projectservice.dto.TaskDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
+import org.itone.trello.projectservice.model.Board;
 import org.itone.trello.projectservice.model.Desk;
 import org.itone.trello.projectservice.model.Task;
 import org.itone.trello.projectservice.model.User;
+import org.itone.trello.projectservice.service.impl.BoardServiceImpl;
 import org.itone.trello.projectservice.service.impl.TaskServiceImpl;
 import org.itone.trello.projectservice.service.impl.UserServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -24,13 +26,15 @@ public class TaskController {
 
     private final TaskServiceImpl taskServiceImpl;
     private final UserServiceImpl userServiceImpl;
+    private final BoardServiceImpl boardServiceImpl;
 
-    public TaskController(TaskServiceImpl taskServiceImpl, UserServiceImpl userServiceImpl) {
+    public TaskController(TaskServiceImpl taskServiceImpl,
+                          UserServiceImpl userServiceImpl,
+                          BoardServiceImpl boardServiceImpl) {
         this.taskServiceImpl = taskServiceImpl;
         this.userServiceImpl = userServiceImpl;
+        this.boardServiceImpl = boardServiceImpl;
     }
-
-    //TODO: concat strings with StringBuilder or StringBuffer
 
     @GetMapping("/get/{id}")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable long id) {
@@ -75,8 +79,34 @@ public class TaskController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("/remove/{id}")
-    public ResponseEntity<String> removeTask(@PathVariable long id) {
+    @PostMapping("/change/{taskId}/board")
+    public ResponseEntity<TaskDTO> changeBoard(@PathVariable long taskId,
+                                               @RequestParam long newBoardId) {
+
+        Task task = taskServiceImpl.getTaskById(taskId);
+
+        //Get old board of task from gotten task and get new board using newBoardId
+        Board oldBoard = task.getBoard();
+        Board newBoard = boardServiceImpl.getBoardById(newBoardId);
+
+        //Remove task from old board and add then add task to new board by calling addTask() method.
+        //This method also encapsulate setting board of added task to current board
+        oldBoard.removeTask(task);
+        newBoard.addTask(task);
+
+        //Save changes to DB
+        taskServiceImpl.saveTask(task);
+        boardServiceImpl.saveBoard(oldBoard);
+        boardServiceImpl.saveBoard(newBoard);
+
+        return new ResponseEntity<>(new TaskDTO(task.getId(),
+                                                task.getName(),
+                                                task.getDescription(),
+                                                newBoard.getName()), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteTask(@PathVariable long id) {
 
         taskServiceImpl.deleteTask(id);
 

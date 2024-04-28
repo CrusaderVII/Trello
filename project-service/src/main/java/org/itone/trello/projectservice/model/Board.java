@@ -3,11 +3,14 @@ package org.itone.trello.projectservice.model;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "boards")
 public class Board {
+
+    //TODO: implement serializable interface to model
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true, name = "board_id", updatable = false)
@@ -70,7 +73,23 @@ public class Board {
         task.setBoard(this);
     }
 
-    //TODO: remove task
+    public void removeTask(Task task) {
+        if (tasks == null) return;
+        tasks.remove(task);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return id == board.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

@@ -9,6 +9,7 @@ import org.itone.trello.projectservice.exception.desk.NoSuchDeskException;
 import org.itone.trello.projectservice.model.Board;
 import org.itone.trello.projectservice.model.Desk;
 import org.itone.trello.projectservice.model.Project;
+import org.itone.trello.projectservice.service.DeskService;
 import org.itone.trello.projectservice.service.impl.BoardServiceImpl;
 import org.itone.trello.projectservice.service.impl.DeskServiceImpl;
 import org.slf4j.LoggerFactory;
@@ -26,32 +27,25 @@ import java.util.stream.Collectors;
 @RequestMapping("trello/api/v1/desk")
 public class DeskController {
 
-    private final DeskServiceImpl deskServiceImpl;
-    private final BoardServiceImpl boardServiceImpl;
+    private final DeskService deskService;
 
     //Create logger with the name corresponding to DeskController from Logback using LoggerFactory from Sel4j,
     //because Logback implements Sel4j interfaces.
     private final Logger logger = (Logger) LoggerFactory.getLogger(DeskController.class);
 
-    public DeskController(DeskServiceImpl deskServiceImpl, BoardServiceImpl boardServiceImpl) {
-        this.deskServiceImpl = deskServiceImpl;
-        this.boardServiceImpl = boardServiceImpl;
+    public DeskController(DeskService deskService) {
+        this.deskService = deskService;
         logger.setLevel(Level.INFO);
     }
-
 
     @GetMapping("/get/{id}")
     public ResponseEntity<DeskDTO> getDeskById(@PathVariable long id) {
         try {
-            Desk desk = deskServiceImpl.getDeskById(id);
-            ProjectDTO projectDTO = new ProjectDTO(desk.getProject().getId(),
-                                                   desk.getProject().getName(),
-                                                   desk.getProject().getDescription());
+            Desk desk = deskService.getDeskById(id);
 
             DeskDTO deskDTO = new DeskDTO(desk.getId(),
                                           desk.getName(),
-                                          projectDTO);
-
+                                          desk.getProject().getName());
 
             return new ResponseEntity<>(deskDTO, HttpStatus.OK);
         } catch (NoSuchDeskException exc) {
@@ -62,9 +56,10 @@ public class DeskController {
     @GetMapping("/get/{deskId}/boards")
     public ResponseEntity<Set<BoardDTO>> getAllBoards(@PathVariable long deskId) {
         try {
-            Desk desk = deskServiceImpl.getDeskById(deskId);
+            Desk desk = deskService.getDeskById(deskId);
 
-            Set<BoardDTO> boardDTOs = desk.getBoards().stream()
+            Set<BoardDTO> boardDTOs = desk.getBoards()
+                    .stream()
                     .map(board -> new BoardDTO(board.getId(),
                                                board.getName(),
                                                desk.getName()))
@@ -78,23 +73,16 @@ public class DeskController {
     }
 
     @PostMapping("add/board")
-    public ResponseEntity<BoardDTO> addUserToProject(@RequestParam long deskId,
-                                                     @RequestBody Board board) {
+    public ResponseEntity<BoardDTO> addBoardToDesk(@RequestParam long deskId,
+                                                   @RequestBody Board board) {
         try {
-            //Get desk by id using deskServiceImpl
-            Desk desk = deskServiceImpl.getDeskById(deskId);
+            //Board can be created only in this (Desk) controller
+            board = deskService.addBoardToDesk(deskId, board);
 
-            //Add to set of boards of gotten desk new board. Board can be created only in this (Desk) controller.
-            //addBoard() method also encapsulates setting desk of added board to current desk, so we don't need
-            //to call setDesk() method of board object separately.
-            desk.addBoard(board);
+            BoardDTO boardDTO = new BoardDTO(board.getId(), board.getName(), board.getDesk().getName());
 
-            //Save changes to desk and board entities to DB
-            boardServiceImpl.saveBoard(board);
-            deskServiceImpl.saveDesk(desk);
-
-            logger.info("New board {} was added to desk {}", board, desk);
-            return new ResponseEntity<>(new BoardDTO(board.getId(), board.getName(), desk.getName()), HttpStatus.OK);
+            logger.info("New board {} was added to desk {}", board, board.getDesk());
+            return new ResponseEntity<>(boardDTO, HttpStatus.OK);
         } catch (NoSuchDeskException exc) {
             logger.warn(exc.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -104,7 +92,7 @@ public class DeskController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteDesk(@PathVariable long id) {
-        deskServiceImpl.deleteDesk(id);
+        deskService.deleteDesk(id);
 
         logger.info("Desk with id {} was deleted successfully", id);
         return new ResponseEntity<>("Desk with id "+id+" deleted successfully", HttpStatus.OK);

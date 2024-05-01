@@ -6,6 +6,7 @@ import org.itone.trello.projectservice.dto.*;
 import org.itone.trello.projectservice.dto.BoardDTO;
 import org.itone.trello.projectservice.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.model.*;
+import org.itone.trello.projectservice.service.BoardService;
 import org.itone.trello.projectservice.service.impl.BoardServiceImpl;
 import org.itone.trello.projectservice.service.impl.TaskServiceImpl;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,7 @@ import java.util.stream.Collectors;
 @RequestMapping("trello/api/v1/board")
 public class BoardController {
 
-    private final BoardServiceImpl boardServiceImpl;
-    private final TaskServiceImpl taskServiceImpl;
+    private final BoardService boardService;
 
     //Create logger with the name corresponding to BoardController from Logback using LoggerFactory from Sel4j,
     //because Logback implements Sel4j interfaces.
@@ -32,22 +32,21 @@ public class BoardController {
 
     //TODO: study pageable in jpa*
     //TODO: create class Message for responding in delete controllers if needed???
-    public BoardController(BoardServiceImpl boardServiceImpl, TaskServiceImpl taskServiceImpl) {
-        this.boardServiceImpl = boardServiceImpl;
-        this.taskServiceImpl = taskServiceImpl;
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
         logger.setLevel(Level.INFO);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<BoardDTO> getBoardById(@PathVariable long id) {
         try {
-            Board board = boardServiceImpl.getBoardById(id);
+            Board board = boardService.getBoardById(id);
 
-            return new ResponseEntity<>(new BoardDTO(
-                    board.getId(),
-                    board.getName(),
-                    board.getDesk().getName()),
-                    HttpStatus.OK);
+            BoardDTO boardDTO = new BoardDTO(board.getId(),
+                                             board.getName(),
+                                             board.getDesk().getName());
+
+            return new ResponseEntity<>(boardDTO, HttpStatus.OK);
         } catch (NoSuchBoardException exc) {
             logger.warn(exc.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -57,9 +56,10 @@ public class BoardController {
     @GetMapping("get/{id}/tasks")
     public ResponseEntity<Set<TaskDTO>> getTasksOnBoard(@PathVariable long id) {
         try {
-            Board board = boardServiceImpl.getBoardById(id);
+            Board board = boardService.getBoardById(id);
 
-            Set<TaskDTO> taskDTOs = board.getTasks().stream()
+            Set<TaskDTO> taskDTOs = board.getTasks()
+                    .stream()
                     .map(task -> new TaskDTO(task.getId(),
                                              task.getName(),
                                              task.getDescription(),
@@ -77,24 +77,14 @@ public class BoardController {
     public ResponseEntity<TaskDTO> addTaskToBoard(@RequestParam long boardId,
                                                   @RequestBody Task task) {
         try {
-            //Get board by id using boardServiceImpl
-            Board board = boardServiceImpl.getBoardById(boardId);
-
-            //Add to set of tasks of gotten board new task. Task can be created only in this (Board) controller.
-            //addTask() method also encapsulates setting board of added task to current board, so we don't need
-            //to call setBoard() method of task object separately.
-            board.addTask(task);
-
-            //Save changes to board and task entities to DB
-            taskServiceImpl.saveTask(task);
-            boardServiceImpl.saveBoard(board);
-
+            //Task can be created only in this (Board) controller
+            task = boardService.addTask(boardId, task);
             TaskDTO taskDTO = new TaskDTO(task.getId(),
                                           task.getName(),
                                           task.getDescription(),
-                                          board.getName());
+                                          task.getBoard().getName());
 
-            logger.info("New task {} was added to board {}", task, board);
+            logger.info("New task {} was added to board {}", task, task.getBoard());
             return new ResponseEntity<>(taskDTO, HttpStatus.OK);
         } catch (NoSuchBoardException exc) {
             logger.warn(exc.getMessage());
@@ -105,7 +95,7 @@ public class BoardController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String> deleteBoard (@PathVariable long id) {
-        boardServiceImpl.deleteBoard(id);
+        boardService.deleteBoard(id);
 
         logger.info("Board with id {} was deleted successfully", id);
         return new ResponseEntity<>("Board with "+id+" deleted successfully", HttpStatus.OK);

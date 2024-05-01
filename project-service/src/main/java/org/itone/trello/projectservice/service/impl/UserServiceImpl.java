@@ -1,5 +1,6 @@
 package org.itone.trello.projectservice.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.exception.user.NoSuchUserException;
 import org.itone.trello.projectservice.exception.user.WrongPasswordException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserValidationService userValidationService;
@@ -60,12 +62,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateUserPassword(User userFromRequest, String newPassword) throws NoSuchUserException,
+            WrongPasswordException, InvalidDataException{
+        //Check if user requesting password change is not some criminal
+        User user = authUser(userFromRequest.getEmail(), userFromRequest.getPassword());
+
+        //Set new password to user and then use .saveUser() method, because it encapsulates data validation
+        user.setPassword(newPassword);
+        return saveUser(user);
+    }
+
+    @Override
     public User updateUser(User entity) {
         return userRepository.save(entity);
     }
 
     @Override
     public void deleteUser (long id) {
+        //Get user by id
+        User user = getUserById(id);
+
+        //Delete all connections with projects and tasks before deleting. Because User entity
+        //has mappedBy attribute for both tasks and project, therefore we firstly need to delete
+        //all connections of a user manually
+        user.getProjects()
+                .stream()
+                .forEach(project -> project.removeUser(id));
+        user.getTasks()
+                .stream()
+                .forEach(task -> task.removeUser(id));
+
+        //Save changes to user and then delete user
+        updateUser(user);
         userRepository.deleteById(id);
     }
 

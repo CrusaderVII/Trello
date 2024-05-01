@@ -9,5 +9,6 @@ import java.util.List;
 public interface BoardService {
     Board getBoardById(long id);
     Board saveBoard(Board entity);
+    Task addTask(long boardId, Task task);
     void deleteBoard(long id);
 }

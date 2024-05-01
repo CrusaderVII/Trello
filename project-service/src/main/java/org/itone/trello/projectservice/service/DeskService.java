@@ -9,5 +9,7 @@ import java.util.List;
 public interface DeskService {
     Desk getDeskById(long id);
     Desk saveDesk(Desk entity);
+    Board addBoardToDesk(long deskId, Board board);
+
     void deleteDesk(long id);
 }

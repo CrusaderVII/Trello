@@ -10,5 +10,8 @@ public interface ProjectService {
     Project getProjectById(long id);
     List<Project> getAllProjects();
     Project saveProject(Project entity);
+    User addUserToProject(long projectId, long userId);
+    Desk addDeskToProject(long projectId, Desk desk);
+    void removeUserFromProject(long projectId, long userId);
     void deleteProject(long id);
 }

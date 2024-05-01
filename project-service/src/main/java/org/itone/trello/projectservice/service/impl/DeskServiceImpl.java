@@ -1,26 +1,43 @@
 package org.itone.trello.projectservice.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.exception.desk.NoSuchDeskException;
 import org.itone.trello.projectservice.model.Board;
 import org.itone.trello.projectservice.model.Desk;
+import org.itone.trello.projectservice.repository.BoardRepository;
 import org.itone.trello.projectservice.repository.DeskRepository;
+import org.itone.trello.projectservice.service.BoardService;
 import org.itone.trello.projectservice.service.DeskService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@Transactional
 public class DeskServiceImpl implements DeskService {
 
     private final DeskRepository deskRepository;
+    private final BoardService boardService;
 
-    public DeskServiceImpl(DeskRepository deskRepository) {
+    public DeskServiceImpl(DeskRepository deskRepository, BoardService boardService) {
         this.deskRepository = deskRepository;
+        this.boardService = boardService;
     }
 
     @Override
     public Desk getDeskById(long id) {
         return deskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchDeskException("id "+id));
+    }
+
+    public Board addBoardToDesk(long deskId, Board board) {
+        //Add to set of boards of gotten desk new board.
+        //addBoard() method also encapsulates setting desk of added board to current desk, so we don't need
+        //to call setDesk() method of board object separately.
+        Desk desk = getDeskById(deskId);
+        desk.addBoard(board);
+
+        saveDesk(desk);
+        return boardService.saveBoard(board);
     }
 
     @Override

@@ -42,6 +42,8 @@ public class UserController {
         logger.setLevel(Level.INFO);
     }
 
+    //TODO: Create controller for changing email
+
     @GetMapping("/get/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable long id) {
         try {
@@ -149,6 +151,35 @@ public class UserController {
                     user.getName(),
                     user.getEmail()),
                     HttpStatus.OK);
+        } catch (InvalidDataException exc) {
+            logger.warn(exc.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/update/password")
+    public ResponseEntity<UserDTO> updateUserPassword(@RequestBody User userFromRequest,
+                                                      @RequestParam String newPassword) {
+        try {
+            //Check if user requesting password change is not some criminal
+            User user = userServiceImpl.authUser(userFromRequest.getEmail(), userFromRequest.getPassword());
+
+            //Set new password to user and then use .saveUser() method, because it encapsulates data validation
+            user.setPassword(newPassword);
+            User userWithNewPassword = userServiceImpl.saveUser(user);
+
+            UserDTO userDTO = new UserDTO(userWithNewPassword.getId(),
+                                          userWithNewPassword.getName(),
+                                          userWithNewPassword.getEmail());
+
+            logger.info("User {} changed the password successfully", userWithNewPassword);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        } catch (NoSuchUserException exc) {
+            logger.warn(exc.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (WrongPasswordException exc) {
+            logger.warn(exc.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         } catch (InvalidDataException exc) {
             logger.warn(exc.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

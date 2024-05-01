@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
         try {
             //validate data of a new user
             userValidationService.validate(entity);
+
             //encode password of a new user if validation was successful
             entity.setPassword(encodePassword(entity.getPassword()));
             return userRepository.save(entity);

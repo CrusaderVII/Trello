@@ -1,4 +1,4 @@
-package org.itone.trello.projectservice.model;
+package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
 

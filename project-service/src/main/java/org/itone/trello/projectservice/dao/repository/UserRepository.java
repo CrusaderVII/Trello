@@ -1,6 +1,6 @@
-package org.itone.trello.projectservice.repository;
+package org.itone.trello.projectservice.dao.repository;
 
-import org.itone.trello.projectservice.model.User;
+import org.itone.trello.projectservice.dao.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

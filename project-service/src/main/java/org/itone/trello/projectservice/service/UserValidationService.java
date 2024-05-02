@@ -1,10 +1,10 @@
 package org.itone.trello.projectservice.service;
 
-import org.itone.trello.projectservice.exception.user.InvalidDataException;
-import org.itone.trello.projectservice.exception.user.InvalidEmailException;
-import org.itone.trello.projectservice.exception.user.InvalidNameException;
-import org.itone.trello.projectservice.exception.user.InvalidPasswordException;
-import org.itone.trello.projectservice.model.User;
+import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
+import org.itone.trello.projectservice.util.exception.user.InvalidEmailException;
+import org.itone.trello.projectservice.util.exception.user.InvalidNameException;
+import org.itone.trello.projectservice.util.exception.user.InvalidPasswordException;
+import org.itone.trello.projectservice.dao.model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

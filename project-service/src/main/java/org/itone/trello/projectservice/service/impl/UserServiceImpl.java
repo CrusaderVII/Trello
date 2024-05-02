@@ -1,11 +1,11 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.itone.trello.projectservice.exception.user.InvalidDataException;
-import org.itone.trello.projectservice.exception.user.NoSuchUserException;
-import org.itone.trello.projectservice.exception.user.WrongPasswordException;
-import org.itone.trello.projectservice.model.User;
-import org.itone.trello.projectservice.repository.UserRepository;
+import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
+import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
+import org.itone.trello.projectservice.util.exception.user.WrongPasswordException;
+import org.itone.trello.projectservice.dao.model.User;
+import org.itone.trello.projectservice.dao.repository.UserRepository;
 import org.itone.trello.projectservice.service.UserService;
 import org.itone.trello.projectservice.service.UserValidationService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

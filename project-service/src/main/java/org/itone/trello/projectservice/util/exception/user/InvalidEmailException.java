@@ -1,4 +1,4 @@
-package org.itone.trello.projectservice.exception.user;
+package org.itone.trello.projectservice.util.exception.user;
 
 public class InvalidEmailException extends InvalidDataException{
     private static final String PREFIX = "Invalid email";

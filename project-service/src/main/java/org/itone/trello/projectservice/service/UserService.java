@@ -1,7 +1,6 @@
 package org.itone.trello.projectservice.service;
 
-import org.itone.trello.projectservice.model.Project;
-import org.itone.trello.projectservice.model.User;
+import org.itone.trello.projectservice.dao.model.User;
 
 import java.util.List;
 

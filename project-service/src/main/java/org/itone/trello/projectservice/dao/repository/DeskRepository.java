@@ -1,7 +1,7 @@
-package org.itone.trello.projectservice.repository;
+package org.itone.trello.projectservice.dao.repository;
 
-import org.itone.trello.projectservice.model.Board;
-import org.itone.trello.projectservice.model.Desk;
+import org.itone.trello.projectservice.dao.model.Board;
+import org.itone.trello.projectservice.dao.model.Desk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

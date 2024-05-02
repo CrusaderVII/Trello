@@ -1,16 +1,15 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.itone.trello.projectservice.exception.project.NoSuchProjectException;
-import org.itone.trello.projectservice.exception.user.NoSuchUserException;
-import org.itone.trello.projectservice.model.Desk;
-import org.itone.trello.projectservice.model.Project;
-import org.itone.trello.projectservice.model.User;
-import org.itone.trello.projectservice.repository.ProjectRepository;
+import org.itone.trello.projectservice.util.exception.project.NoSuchProjectException;
+import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
+import org.itone.trello.projectservice.dao.model.Desk;
+import org.itone.trello.projectservice.dao.model.Project;
+import org.itone.trello.projectservice.dao.model.User;
+import org.itone.trello.projectservice.dao.repository.ProjectRepository;
 import org.itone.trello.projectservice.service.DeskService;
 import org.itone.trello.projectservice.service.ProjectService;
 import org.itone.trello.projectservice.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

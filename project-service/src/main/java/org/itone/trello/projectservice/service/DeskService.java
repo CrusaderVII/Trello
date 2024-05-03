@@ -3,10 +3,12 @@ package org.itone.trello.projectservice.service;
 import org.itone.trello.projectservice.dao.model.Board;
 import org.itone.trello.projectservice.dao.model.Desk;
 
-public interface DeskService {
-    Desk getDeskById(long id);
-    Desk saveDesk(Desk entity);
-    Board addBoardToDesk(long deskId, Board board);
+import java.util.UUID;
 
-    void deleteDesk(long id);
+public interface DeskService {
+    Desk getDeskById(UUID id);
+    Desk saveDesk(Desk entity);
+    Board addBoardToDesk(UUID deskId, Board board);
+
+    void deleteDesk(UUID id);
 }

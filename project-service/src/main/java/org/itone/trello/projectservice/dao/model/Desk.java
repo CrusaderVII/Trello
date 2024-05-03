@@ -1,18 +1,22 @@
 package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import org.itone.trello.projectservice.dto.DeskDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "desks")
+@Data
 public class Desk {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true, name = "desk_id", updatable = false)
-    private long id;
+    private UUID id;
     @Column(nullable = false, name = "desk_name")
     private String name;
     @ManyToOne
@@ -20,46 +24,6 @@ public class Desk {
     private Project project;
     @OneToMany(mappedBy = "desk", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Board> boards;
-
-    public Desk(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Desk() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Set<Board> getBoards() {
-        return boards;
-    }
-
-    public void setBoards(Set<Board> boards) {
-        this.boards = boards;
-    }
 
     public void addBoard(Board board) {
         if (boards == null) boards = new HashSet<>();
@@ -73,12 +37,16 @@ public class Desk {
         boards.remove(board);
     }
 
+    public DeskDTO toDTO() {
+        return new DeskDTO(this.id, this.name, this.project.getName());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Desk desk = (Desk) o;
-        return id == desk.id;
+        return Objects.equals(id, desk.id);
     }
 
     @Override

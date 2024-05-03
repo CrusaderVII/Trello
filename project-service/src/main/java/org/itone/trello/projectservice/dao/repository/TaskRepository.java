@@ -7,14 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, UUID> {
 
-    @Query("""
-            select users 
-            from Task t
-            join t.users users
-            where t.id=?1""")
-    public List<User> findAllUsersOnTask(long taskId);
 }

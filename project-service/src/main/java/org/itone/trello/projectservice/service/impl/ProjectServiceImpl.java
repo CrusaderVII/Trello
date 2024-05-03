@@ -13,6 +13,8 @@ import org.itone.trello.projectservice.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+
 @Service
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
@@ -27,7 +29,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project getProjectById(long id) throws NoSuchProjectException {
+    public Project getProjectById(UUID id) throws NoSuchProjectException {
         return projectRepository.findById(id)
                 .orElseThrow(() -> new NoSuchProjectException("id "+id));
     }
@@ -43,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public User addUserToProject(long projectId, long userId) throws NoSuchProjectException, NoSuchUserException {
+    public User addUserToProject(UUID projectId, UUID userId) throws NoSuchProjectException, NoSuchUserException {
         //Get project and user by id using corresponding services
         Project project = getProjectById(projectId);
         User user = userService.getUserById(userId);
@@ -59,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Desk addDeskToProject(long projectId, Desk desk) throws NoSuchProjectException{
+    public Desk addDeskToProject(UUID projectId, Desk desk) throws NoSuchProjectException{
         //Get project by id using projectService
         Project project = getProjectById(projectId);
 
@@ -74,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void removeUserFromProject(long projectId, long userId) throws NoSuchProjectException, NoSuchUserException {
+    public void removeUserFromProject(UUID projectId, UUID userId) throws NoSuchProjectException, NoSuchUserException {
         //Get project and user by id using corresponding services
         Project project = getProjectById(projectId);
         User user = userService.getUserById(userId);
@@ -90,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void deleteProject(long id) {
+    public void deleteProject(UUID id) {
         projectRepository.deleteById(id);
     }
 }

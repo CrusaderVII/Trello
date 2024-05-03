@@ -9,6 +9,8 @@ import org.itone.trello.projectservice.dao.repository.TaskRepository;
 import org.itone.trello.projectservice.service.BoardService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Transactional
 public class BoardServiceImpl implements BoardService {
@@ -22,7 +24,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board getBoardById(long id) throws NoSuchBoardException{
+    public Board getBoardById(UUID id) throws NoSuchBoardException{
         return boardRepository.findById(id)
                 .orElseThrow(() ->new NoSuchBoardException("id "+id));
     }
@@ -32,7 +34,7 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.save(board);
     }
 
-    public Task addTask(long boardId, Task task) {
+    public Task addTask(UUID boardId, Task task) {
         //Add to set of tasks of gotten board new task.
         //addTask() method also encapsulates setting board of added task to current board, so we don't need
         //to call setBoard() method of task object separately.
@@ -44,7 +46,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void deleteBoard(long id) {
+    public void deleteBoard(UUID id) {
         boardRepository.deleteById(id);
     }
 }

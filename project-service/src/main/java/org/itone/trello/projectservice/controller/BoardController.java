@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,47 +34,36 @@ public class BoardController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<BoardDTO> getBoardById(@PathVariable long id) {
+    public ResponseEntity<BoardDTO> getBoardById(@PathVariable UUID id) {
         Board board = boardService.getBoardById(id);
 
-        BoardDTO boardDTO = new BoardDTO(board.getId(),
-                                             board.getName(),
-                                             board.getDesk().getName());
-
-        return new ResponseEntity<>(boardDTO, HttpStatus.OK);
+        return new ResponseEntity<>(board.toDTO(), HttpStatus.OK);
     }
 
     @GetMapping("get/{id}/tasks")
-    public ResponseEntity<Set<TaskDTO>> getTasksOnBoard(@PathVariable long id) {
+    public ResponseEntity<Set<TaskDTO>> getTasksOnBoard(@PathVariable UUID id) {
         Board board = boardService.getBoardById(id);
 
         Set<TaskDTO> taskDTOs = board.getTasks()
                 .stream()
-                .map(task -> new TaskDTO(task.getId(),
-                                             task.getName(),
-                                             task.getDescription(),
-                                             board.getName()))
+                .map(Task::toDTO)
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(taskDTOs, HttpStatus.OK);
     }
 
     @PostMapping("add/task")
-    public ResponseEntity<TaskDTO> addTaskToBoard(@RequestParam long boardId,
+    public ResponseEntity<TaskDTO> addTaskToBoard(@RequestParam UUID boardId,
                                                   @RequestBody Task task) {
         //Task can be created only in this (Board) controller
         task = boardService.addTask(boardId, task);
-        TaskDTO taskDTO = new TaskDTO(task.getId(),
-                                          task.getName(),
-                                          task.getDescription(),
-                                          task.getBoard().getName());
 
         logger.debug("New task {} was added to board {}", task, task.getBoard());
-        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+        return new ResponseEntity<>(task.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteBoard (@PathVariable long id) {
+    public ResponseEntity<String> deleteBoard (@PathVariable UUID id) {
         boardService.deleteBoard(id);
 
         logger.debug("Board with id {} was deleted successfully", id);

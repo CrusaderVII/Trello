@@ -7,19 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
-    @Query(value = """
-            select desk 
-            from Board b
-            join b.desk
-            where b.id=?1""")
-    public Desk findDeskOfBoard(long boardId);
+public interface BoardRepository extends JpaRepository<Board, UUID> {
 
-    @Query(value = """
-            select tasks
-            from Board b
-            join b.tasks
-            where b.id=?1""")
-    public List<Task> findAllTasksOnBoard(long boardId);
 }

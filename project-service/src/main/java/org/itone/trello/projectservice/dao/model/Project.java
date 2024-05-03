@@ -1,18 +1,22 @@
 package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import org.itone.trello.projectservice.dto.ProjectDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "projects")
+@Data
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true, name = "project_id", updatable = false)
-    private long id;
+    private UUID id;
     @Column(nullable = false, name = "project_name")
     private String name;
     @Column(name = "project_description", length = 500)
@@ -27,55 +31,6 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Set<Desk> desks;
 
-    public Project(long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
-    public Project() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
-    public Set<Desk> getDesks() {
-        return desks;
-    }
-
-    public void setDesks(Set<Desk> desks) {
-        this.desks = desks;
-    }
-
     public void addUser(User user) {
         //If it is 1st user we should create a new HashSet before adding new user
         if (this.users == null) this.users = new HashSet<>();
@@ -86,10 +41,10 @@ public class Project {
         user.getProjects().add(this);
     }
 
-    public void removeUser(long id) {
+    public void removeUser(UUID id) {
         //Check set of user contains user with specified id
         User user = users.stream()
-                .filter(currentUser -> currentUser.getId()==id)
+                .filter(currentUser -> currentUser.getId().equals(id))
                 .findFirst()
                 .orElse(null);
 
@@ -109,12 +64,16 @@ public class Project {
         desk.setProject(this);
     }
 
+    public ProjectDTO toDTO () {
+        return new ProjectDTO(this.id, this.name, this.description);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return id == project.id;
+        return Objects.equals(id, project.id);
     }
 
     @Override

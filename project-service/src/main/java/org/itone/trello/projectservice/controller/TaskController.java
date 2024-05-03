@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,59 +36,45 @@ public class TaskController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable long id) {
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable UUID id) {
         Task task = taskService.getTaskById(id);
 
-        TaskDTO taskDTO = new TaskDTO(task.getId(),
-                                          task.getName(),
-                                          task.getDescription(),
-                                          task.getBoard().getName());
-
-        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+        return new ResponseEntity<>(task.toDTO(), HttpStatus.OK);
     }
 
     @GetMapping("/get/{id}/users")
-    public ResponseEntity<Set<UserDTO>> getUsersOnTask(@PathVariable long id) {
+    public ResponseEntity<Set<UserDTO>> getUsersOnTask(@PathVariable UUID id) {
         Task task = taskService.getTaskById(id);
 
         Set<UserDTO> userDTOs = task.getUsers().stream()
-                .map(user -> new UserDTO(user.getId(),
-                                             user.getName(),
-                                             user.getEmail()))
+                .map(User::toDTO)
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
 
     @PostMapping("/add/user")
-    public ResponseEntity<UserDTO> addUserToTask(@RequestParam long taskId,
-                                                 @RequestParam long userId) {
+    public ResponseEntity<UserDTO> addUserToTask(@RequestParam UUID taskId,
+                                                 @RequestParam UUID userId) {
 
         User user = taskService.addUserToTask(taskId, userId);
 
-        UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getEmail());
-
         logger.debug("User {} was assigned to task with id {}", user, taskId);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/change/{taskId}/board")
-    public ResponseEntity<TaskDTO> changeBoard(@PathVariable long taskId,
-                                               @RequestParam long newBoardId) {
+    public ResponseEntity<TaskDTO> changeBoard(@PathVariable UUID taskId,
+                                               @RequestParam UUID newBoardId) {
 
         Task task = taskService.changeBoard(taskId, newBoardId);
 
-        TaskDTO taskDTO = new TaskDTO(task.getId(),
-                                          task.getName(),
-                                          task.getDescription(),
-                                          task.getBoard().getName());
-
         logger.debug("Task {} was moved to board with id {}", task, newBoardId);
-        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+        return new ResponseEntity<>(task.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable long id) {
+    public ResponseEntity<String> deleteTask(@PathVariable UUID id) {
         taskService.deleteTask(id);
 
         logger.debug("Task with id {} was deleted successfully", id);
@@ -95,8 +82,8 @@ public class TaskController {
     }
 
     @DeleteMapping("/remove/user")
-    public ResponseEntity<String> removeUserFromTask(@RequestParam long taskId,
-                                                     @RequestParam long userId) {
+    public ResponseEntity<String> removeUserFromTask(@RequestParam UUID taskId,
+                                                     @RequestParam UUID userId) {
         taskService.removeUserFromTask(taskId, userId);
 
         logger.debug("User with id {} was removed from task with id {}", userId, taskId);

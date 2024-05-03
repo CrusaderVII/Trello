@@ -13,6 +13,8 @@ import org.itone.trello.projectservice.service.TaskService;
 import org.itone.trello.projectservice.service.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Transactional
 public class TaskServiceImpl implements TaskService {
@@ -28,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task getTaskById(long id) throws NoSuchTaskException{
+    public Task getTaskById(UUID id) throws NoSuchTaskException{
         return taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchTaskException("id "+id));
     }
@@ -39,7 +41,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public User addUserToTask(long taskId, long userId) throws NoSuchTaskException, NoSuchUserException {
+    public User addUserToTask(UUID taskId, UUID userId) throws NoSuchTaskException, NoSuchUserException {
         Task task = getTaskById(taskId);
         User user = userService.getUserById(userId);
 
@@ -50,7 +52,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task changeBoard(long taskId, long newBoardId) throws NoSuchTaskException, NoSuchBoardException {
+    public Task changeBoard(UUID taskId, UUID newBoardId) throws NoSuchTaskException, NoSuchBoardException {
         Task task = getTaskById(taskId);
 
         //Get old board of task from gotten task and get new board using newBoardId
@@ -68,7 +70,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void removeUserFromTask(long taskId, long userId) throws NoSuchTaskException, NoSuchUserException {
+    public void removeUserFromTask(UUID taskId, UUID userId) throws NoSuchTaskException, NoSuchUserException {
         Task task = getTaskById(taskId);
         User user = userService.getUserById(userId);
 
@@ -80,7 +82,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(long id) {
+    public void deleteTask(UUID id) {
         taskRepository.deleteById(id);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,42 +34,35 @@ public class DeskController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<DeskDTO> getDeskById(@PathVariable long id) {
+    public ResponseEntity<DeskDTO> getDeskById(@PathVariable UUID id) {
         Desk desk = deskService.getDeskById(id);
 
-        DeskDTO deskDTO = new DeskDTO(desk.getId(),
-                                          desk.getName(),
-                                          desk.getProject().getName());
-
-        return new ResponseEntity<>(deskDTO, HttpStatus.OK);
+        return new ResponseEntity<>(desk.toDTO(), HttpStatus.OK);
     }
     @GetMapping("/get/{deskId}/boards")
-    public ResponseEntity<Set<BoardDTO>> getAllBoards(@PathVariable long deskId) {
+    public ResponseEntity<Set<BoardDTO>> getAllBoards(@PathVariable UUID deskId) {
         Desk desk = deskService.getDeskById(deskId);
 
         Set<BoardDTO> boardDTOs = desk.getBoards()
                 .stream()
-                .map(board -> new BoardDTO(board.getId(),
-                                               board.getName(),
-                                               desk.getName()))
+                .map(Board::toDTO)
                 .collect(Collectors.toSet());
 
             return new ResponseEntity<>(boardDTOs, HttpStatus.OK);
     }
 
     @PostMapping("add/board")
-    public ResponseEntity<BoardDTO> addBoardToDesk(@RequestParam long deskId,
+    public ResponseEntity<BoardDTO> addBoardToDesk(@RequestParam UUID deskId,
                                                    @RequestBody Board board) {
         //Board can be created only in this (Desk) controller
         board = deskService.addBoardToDesk(deskId, board);
 
-        BoardDTO boardDTO = new BoardDTO(board.getId(), board.getName(), board.getDesk().getName());
         logger.debug("New board {} was added to desk {}", board, board.getDesk());
-        return new ResponseEntity<>(boardDTO, HttpStatus.OK);
+        return new ResponseEntity<>(board.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteDesk(@PathVariable long id) {
+    public ResponseEntity<String> deleteDesk(@PathVariable UUID id) {
         deskService.deleteDesk(id);
 
         logger.debug("Desk with id {} was deleted successfully", id);

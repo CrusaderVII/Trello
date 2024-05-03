@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,19 +39,13 @@ public class ProjectController {
     //TODO: try to change way of creating new desks, boards and tasks (not inside parent controller)
     //TODO: delete get/all in userController (or implement pageable to it)
     //TODO: add docker
-    //TODO: change ids to UUID
-    //TODO: create toDto method in entities
     //TODO: @Transactional
-    @GetMapping("/get/{id}")
-    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable long id) {
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {
         Project project = projectService.getProjectById(id);
 
-        ProjectDTO projectDTO = new ProjectDTO(project.getId(),
-                                               project.getName(),
-                                               project.getDescription());
-
-        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+        return new ResponseEntity<>(project.toDTO(), HttpStatus.OK);
 
     }
 //    @GetMapping("/get/all")
@@ -69,33 +64,25 @@ public class ProjectController {
 //    }
 
     @GetMapping("get/{id}/users")
-    public ResponseEntity<Set<UserDTO>> getUsersOnProject(@PathVariable long id) {
+    public ResponseEntity<Set<UserDTO>> getUsersOnProject(@PathVariable UUID id) {
 
         Project project = projectService.getProjectById(id);
 
         Set<UserDTO> userDTOs = project.getUsers().stream()
-                .map(user -> new UserDTO(user.getId(),
-                                         user.getName(),
-                                         user.getEmail()))
+                .map(User::toDTO)
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
 
     @GetMapping("get/{id}/desks")
-    public ResponseEntity<Set<DeskDTO>> getDesksOnProject(@PathVariable long id) {
+    public ResponseEntity<Set<DeskDTO>> getDesksOnProject(@PathVariable UUID id) {
         //Get project from projectServiceImpl by id
         Project project = projectService.getProjectById(id);
-        //Create projectDTO from project
-        ProjectDTO projectDTO = new ProjectDTO(project.getId(),
-                                                   project.getName(),
-                                                   project.getDescription());
 
         //Generate list of deskDTO in stream of gotten desks
         Set<DeskDTO> deskDTOs = project.getDesks().stream()
-                .map(desk -> new DeskDTO(desk.getId(),
-                        desk.getName(),
-                        project.getName()))
+                .map(Desk::toDTO)
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(deskDTOs, HttpStatus.OK);
@@ -105,48 +92,35 @@ public class ProjectController {
     //that can be copied and then shared with other users. User can insert this adres into something like
     //search_project search field. If adres correct, then user will be added to this project
     @PostMapping("add/user")
-    public ResponseEntity<UserDTO> addUserToProject(@RequestParam long userId,
-                                                    @RequestParam long projectId) {
+    public ResponseEntity<UserDTO> addUserToProject(@RequestParam UUID userId,
+                                                    @RequestParam UUID projectId) {
 
         User user = projectService.addUserToProject(projectId, userId);
 
-            //return userDTO from added user
-        UserDTO userDTO = new UserDTO(user.getId(),
-                                          user.getName(),
-                                          user.getEmail());
-
         logger.debug("User {} was added to project with id {}", user, projectId);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("add/desk")
-    public ResponseEntity<DeskDTO> addDeskToProject(@RequestParam long projectId,
+    public ResponseEntity<DeskDTO> addDeskToProject(@RequestParam UUID projectId,
                                                     @RequestBody Desk desk) {
 
         desk = projectService.addDeskToProject(projectId, desk);
 
-        DeskDTO deskDTO = new DeskDTO(desk.getId(),
-                                          desk.getName(),
-                                          desk.getProject().getName());
-
         logger.debug("Desk {} was added to project with id {}", desk, projectId);
-        return new ResponseEntity<>(deskDTO, HttpStatus.OK);
+        return new ResponseEntity<>(desk.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/save")
     public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project) {
         Project savedProject = projectService.saveProject(project);
 
-        ProjectDTO projectDTO = new ProjectDTO(project.getId(),
-                                               project.getName(),
-                                               project.getDescription());
-
         logger.debug("New project {} was created", savedProject);
-        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+        return new ResponseEntity<>(project.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProject(@PathVariable long id) {
+    public ResponseEntity<String> deleteProject(@PathVariable UUID id) {
         projectService.deleteProject(id);
 
         logger.debug("Project with id {} was deleted successfully", id);
@@ -154,8 +128,8 @@ public class ProjectController {
     }
 
     @DeleteMapping("/remove/{projectId}/user")
-    public ResponseEntity<String> removeUserFromProject(@PathVariable long projectId,
-                                                        @RequestParam long userId) {
+    public ResponseEntity<String> removeUserFromProject(@PathVariable UUID projectId,
+                                                        @RequestParam UUID userId) {
 
         projectService.removeUserFromProject(projectId, userId);
 

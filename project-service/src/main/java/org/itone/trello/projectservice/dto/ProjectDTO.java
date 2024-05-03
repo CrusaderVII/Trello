@@ -1,4 +1,6 @@
 package org.itone.trello.projectservice.dto;
 
-public record ProjectDTO(long id, String name, String description) {
+import java.util.UUID;
+
+public record ProjectDTO(UUID id, String name, String description) {
 }

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     //TODO: add throws declaration to all getById methods in all serviceImpls
     @Override
-    public User getUserById(long id) throws NoSuchUserException{
+    public User getUserById(UUID id) throws NoSuchUserException{
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchUserException("id "+id));
     }
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser (long id) {
+    public void deleteUser (UUID id) {
         //Get user by id
         User user = getUserById(id);
 

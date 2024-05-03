@@ -9,6 +9,8 @@ import org.itone.trello.projectservice.service.BoardService;
 import org.itone.trello.projectservice.service.DeskService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Transactional
 public class DeskServiceImpl implements DeskService {
@@ -22,12 +24,12 @@ public class DeskServiceImpl implements DeskService {
     }
 
     @Override
-    public Desk getDeskById(long id) throws NoSuchDeskException{
+    public Desk getDeskById(UUID id) throws NoSuchDeskException{
         return deskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchDeskException("id "+id));
     }
 
-    public Board addBoardToDesk(long deskId, Board board) {
+    public Board addBoardToDesk(UUID deskId, Board board) {
         //Add to set of boards of gotten desk new board.
         //addBoard() method also encapsulates setting desk of added board to current desk, so we don't need
         //to call setDesk() method of board object separately.
@@ -44,7 +46,7 @@ public class DeskServiceImpl implements DeskService {
     }
 
     @Override
-    public void deleteDesk(long id) {
+    public void deleteDesk(UUID id) {
         deskRepository.deleteById(id);
     }
 }

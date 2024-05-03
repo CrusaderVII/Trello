@@ -1,5 +1,6 @@
 package org.itone.trello.projectservice.controller;
 
+import org.itone.trello.projectservice.dao.model.Project;
 import org.itone.trello.projectservice.dto.ProjectDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
@@ -17,6 +18,7 @@ import ch.qos.logback.classic.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,38 +40,31 @@ public class UserController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         User user = userService.getUserById(id);
 
-        UserDTO userDTO = new UserDTO(user.getId(),
-                                          user.getName(),
-                                          user.getEmail());
-
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
     @GetMapping("/get/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
 
         List<UserDTO> userDTOs = users.stream()
-                .map(user -> new UserDTO(user.getId(),
-                                         user.getName(),
-                                         user.getEmail()))
+                .map(User::toDTO)
                 .toList();
 
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/get/{id}/projects")
-    public ResponseEntity<Set<ProjectDTO>> getProjectsOfUser(@PathVariable long id) {
+    public ResponseEntity<Set<ProjectDTO>> getProjectsOfUser(@PathVariable UUID id) {
         User user = userService.getUserById(id);
 
         Set<ProjectDTO> projectDTOs = user.getProjects()
                 .stream()
-                .map( project -> new ProjectDTO(project.getId(),
-                                                    project.getName(),
-                                                    project.getDescription()))
+                .map(Project::toDTO)
                 .collect(Collectors.toSet());
+
         return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
     }
 
@@ -81,23 +76,15 @@ public class UserController {
         //exception will be thrown
         User user = userService.authUser(email, password);
 
-        UserDTO userDTO = new UserDTO(user.getId(),
-                                          user.getName(),
-                                          user.getEmail());
-
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/save")
     public ResponseEntity<UserDTO> saveUser(@RequestBody User user) {
         User savedUser = userService.saveUser(user);
 
-        UserDTO userDTO = new UserDTO(savedUser.getId(),
-                                          savedUser.getName(),
-                                          savedUser.getEmail());
-
-        logger.debug("New user {} added", savedUser);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        logger.debug("New user {} was added", savedUser);
+        return new ResponseEntity<>(savedUser.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/update/password")
@@ -106,16 +93,12 @@ public class UserController {
 
         User userWithNewPassword = userService.updateUserPassword(userFromRequest, newPassword);
 
-        UserDTO userDTO = new UserDTO(userWithNewPassword.getId(),
-                                          userWithNewPassword.getName(),
-                                          userWithNewPassword.getEmail());
-
         logger.debug("User {} changed the password successfully", userWithNewPassword);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return new ResponseEntity<>(userWithNewPassword.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
 
         logger.debug("User with id {} was successfully deleted", id);

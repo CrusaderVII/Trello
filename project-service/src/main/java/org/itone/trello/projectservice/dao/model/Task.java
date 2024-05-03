@@ -1,18 +1,22 @@
 package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import org.itone.trello.projectservice.dto.TaskDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
+@Data
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true, name = "task_id", updatable = false)
-    private long id;
+    private UUID id;
     @Column(nullable = false, name = "task_name")
     private String name;
     @Column(nullable = false, name = "task_description", length = 500)
@@ -26,55 +30,6 @@ public class Task {
     @JoinColumn(name = "FK_board_id", nullable = false)
     private Board board;
 
-    public Task(long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
-    public Task() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
     public void addUser(User user) {
         if (this.users == null) this.users = new HashSet<>();
         this.users.add(user);
@@ -83,9 +38,9 @@ public class Task {
         user.getTasks().add(this);
     }
 
-    public void removeUser(long id) {
+    public void removeUser(UUID id) {
         User user = users.stream()
-                .filter(currentUser -> currentUser.getId()==id)
+                .filter(currentUser -> currentUser.getId().equals(id))
                 .findFirst()
                 .orElse(null);
 
@@ -95,12 +50,16 @@ public class Task {
         }
     }
 
+    public TaskDTO toDTO () {
+        return new TaskDTO(this.id, this.name, this.description, this.board.getName());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id;
+        return Objects.equals(id, task.id);
     }
 
     @Override

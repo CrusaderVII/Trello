@@ -45,9 +45,9 @@ public class UserController {
 
         return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
-    @GetMapping("/get/all")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    @GetMapping("/get/all/{page}")
+    public ResponseEntity<List<UserDTO>> getAllUsers(@PathVariable int page) {
+        List<User> users = userService.getAllUsers(page);
 
         List<UserDTO> userDTOs = users.stream()
                 .map(User::toDTO)

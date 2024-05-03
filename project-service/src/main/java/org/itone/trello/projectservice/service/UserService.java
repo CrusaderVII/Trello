@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface UserService{
     User getUserById(UUID id);
     User authUser(String email, String rawPassword) ;
-    List<User> getAllUsers();
+    List<User> getAllUsers(int page);
     User saveUser(User entity);
     User updateUserPassword(User user, String newPassword);
     User updateUser(User entity);

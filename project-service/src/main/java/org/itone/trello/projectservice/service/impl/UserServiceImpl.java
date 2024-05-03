@@ -8,6 +8,8 @@ import org.itone.trello.projectservice.dao.model.User;
 import org.itone.trello.projectservice.dao.repository.UserRepository;
 import org.itone.trello.projectservice.service.UserService;
 import org.itone.trello.projectservice.service.UserValidationService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +45,13 @@ public class UserServiceImpl implements UserService {
         else throw new WrongPasswordException();
     }
 
+    //Page contains data about 20 users
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> getAllUsers(int page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return userRepository.findAllUsers(pageable)
+                .stream()
+                .toList();
     }
 
     @Override

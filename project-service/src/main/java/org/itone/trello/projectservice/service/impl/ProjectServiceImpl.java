@@ -20,23 +20,16 @@ import java.util.UUID;
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final UserService userService;
-    private final DeskService deskService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, UserService userService, DeskService deskService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, UserService userService) {
         this.projectRepository = projectRepository;
         this.userService = userService;
-        this.deskService = deskService;
     }
 
     @Override
     public Project getProjectById(UUID id) throws NoSuchProjectException {
         return projectRepository.findById(id)
                 .orElseThrow(() -> new NoSuchProjectException("id "+id));
-    }
-
-    @Override
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
     }
 
     @Override
@@ -58,21 +51,6 @@ public class ProjectServiceImpl implements ProjectService {
         //because using saveUser() method will call UserValidationService inside
         saveProject(project);
         return  userService.updateUser(user);
-    }
-
-    @Override
-    public Desk addDeskToProject(UUID projectId, Desk desk) throws NoSuchProjectException{
-        //Get project by id using projectService
-        Project project = getProjectById(projectId);
-
-        //Add to set of desks of gotten project new desk. Desk can be created only in Project controller.
-        //addDesk() method also encapsulates setting project of added desk to current project, so we don't need
-        //to call setProject() method of desk object separately.
-        project.addDesk(desk);
-
-        //Save changes to project and desk entities to DB
-        saveProject(project);
-        return deskService.saveDesk(desk);
     }
 
     @Override

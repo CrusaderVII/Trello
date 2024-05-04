@@ -9,10 +9,8 @@ import java.util.UUID;
 
 public interface ProjectService {
     Project getProjectById(UUID id);
-    List<Project> getAllProjects();
     Project saveProject(Project entity);
     User addUserToProject(UUID projectId, UUID userId);
-    Desk addDeskToProject(UUID projectId, Desk desk);
     void removeUserFromProject(UUID projectId, UUID userId);
     void deleteProject(UUID id);
 }

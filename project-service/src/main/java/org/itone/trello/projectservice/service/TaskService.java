@@ -8,6 +8,7 @@ import java.util.UUID;
 public interface TaskService {
     Task getTaskById(UUID id);
     Task saveTask(Task entity);
+    Task addTaskToBoard(UUID boardId, Task task);
     User addUserToTask(UUID taskId, UUID userId);
     Task changeBoard(UUID taskId, UUID newBoardId);
     void removeUserFromTask(UUID taskId, UUID userId);

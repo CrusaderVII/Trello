@@ -1,12 +1,15 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dao.model.Project;
+import org.itone.trello.projectservice.service.ProjectService;
 import org.itone.trello.projectservice.util.exception.desk.NoSuchDeskException;
 import org.itone.trello.projectservice.dao.model.Board;
 import org.itone.trello.projectservice.dao.model.Desk;
 import org.itone.trello.projectservice.dao.repository.DeskRepository;
 import org.itone.trello.projectservice.service.BoardService;
 import org.itone.trello.projectservice.service.DeskService;
+import org.itone.trello.projectservice.util.exception.project.NoSuchProjectException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -16,11 +19,11 @@ import java.util.UUID;
 public class DeskServiceImpl implements DeskService {
 
     private final DeskRepository deskRepository;
-    private final BoardService boardService;
+    private final ProjectService projectService;
 
-    public DeskServiceImpl(DeskRepository deskRepository, BoardService boardService) {
+    public DeskServiceImpl(DeskRepository deskRepository, ProjectService projectService) {
         this.deskRepository = deskRepository;
-        this.boardService = boardService;
+        this.projectService = projectService;
     }
 
     @Override
@@ -29,15 +32,19 @@ public class DeskServiceImpl implements DeskService {
                 .orElseThrow(() -> new NoSuchDeskException("id "+id));
     }
 
-    public Board addBoardToDesk(UUID deskId, Board board) {
-        //Add to set of boards of gotten desk new board.
-        //addBoard() method also encapsulates setting desk of added board to current desk, so we don't need
-        //to call setDesk() method of board object separately.
-        Desk desk = getDeskById(deskId);
-        desk.addBoard(board);
+    @Override
+    public Desk addDeskToProject(UUID projectId, Desk desk) throws NoSuchProjectException {
+        //Get project by id using projectService
+        Project project = projectService.getProjectById(projectId);
 
-        saveDesk(desk);
-        return boardService.saveBoard(board);
+        //Add to set of desks of gotten project new desk.
+        //addDesk() method also encapsulates setting project of added desk to current project, so we don't need
+        //to call setProject() method of desk object separately.
+        project.addDesk(desk);
+
+        //Save changes to project and desk entities to DB
+        projectService.saveProject(project);
+        return saveDesk(desk);
     }
 
     @Override

@@ -41,6 +41,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Task addTaskToBoard(UUID boardId, Task task) {
+        Board board = boardService.getBoardById(boardId);
+
+        //Add to set of tasks of gotten board new task.
+        //addTask() method also encapsulates setting board of added task to current board, so we don't need
+        //to call setBoard() method of task object separately.
+        board.addTask(task);
+
+        boardService.saveBoard(board);
+        return saveTask(task);
+    }
+
+    @Override
     public User addUserToTask(UUID taskId, UUID userId) throws NoSuchTaskException, NoSuchUserException {
         Task task = getTaskById(taskId);
         User user = userService.getUserById(userId);

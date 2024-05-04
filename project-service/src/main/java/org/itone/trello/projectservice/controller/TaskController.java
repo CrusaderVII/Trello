@@ -53,6 +53,16 @@ public class TaskController {
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
 
+    @PostMapping("/save")
+    public ResponseEntity<TaskDTO> addTaskToBoard(@RequestParam UUID boardId,
+                                                  @RequestBody Task task) {
+
+        task = taskService.addTaskToBoard(boardId, task);
+
+        logger.debug("New task {} was added to board {}", task, task.getBoard());
+        return new ResponseEntity<>(task.toDTO(), HttpStatus.OK);
+    }
+
     @PostMapping("/add/user")
     public ResponseEntity<UserDTO> addUserToTask(@RequestParam UUID taskId,
                                                  @RequestParam UUID userId) {
@@ -63,7 +73,7 @@ public class TaskController {
         return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
 
-    @PostMapping("/change/{taskId}/board")
+    @PutMapping("/change/{taskId}/board")
     public ResponseEntity<TaskDTO> changeBoard(@PathVariable UUID taskId,
                                                @RequestParam UUID newBoardId) {
 

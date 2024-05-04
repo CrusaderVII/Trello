@@ -51,14 +51,14 @@ public class DeskController {
             return new ResponseEntity<>(boardDTOs, HttpStatus.OK);
     }
 
-    @PostMapping("add/board")
-    public ResponseEntity<BoardDTO> addBoardToDesk(@RequestParam UUID deskId,
-                                                   @RequestBody Board board) {
-        //Board can be created only in this (Desk) controller
-        board = deskService.addBoardToDesk(deskId, board);
+    @PostMapping("/save")
+    public ResponseEntity<DeskDTO> addDeskToProject(@RequestParam UUID projectId,
+                                                    @RequestBody Desk desk) {
 
-        logger.debug("New board {} was added to desk {}", board, board.getDesk());
-        return new ResponseEntity<>(board.toDTO(), HttpStatus.OK);
+        desk = deskService.addDeskToProject(projectId, desk);
+
+        logger.debug("Desk {} was added to project with id {}", desk, projectId);
+        return new ResponseEntity<>(desk.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")

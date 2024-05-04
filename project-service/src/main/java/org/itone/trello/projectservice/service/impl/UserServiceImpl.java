@@ -29,7 +29,6 @@ public class UserServiceImpl implements UserService {
         this.encoder = new BCryptPasswordEncoder(5);
     }
 
-    //TODO: add throws declaration to all getById methods in all serviceImpls
     @Override
     public User getUserById(UUID id) throws NoSuchUserException{
         return userRepository.findById(id)

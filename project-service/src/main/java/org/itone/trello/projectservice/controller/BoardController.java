@@ -40,7 +40,7 @@ public class BoardController {
         return new ResponseEntity<>(board.toDTO(), HttpStatus.OK);
     }
 
-    @GetMapping("get/{id}/tasks")
+    @GetMapping("/get/{id}/tasks")
     public ResponseEntity<Set<TaskDTO>> getTasksOnBoard(@PathVariable UUID id) {
         Board board = boardService.getBoardById(id);
 
@@ -52,17 +52,17 @@ public class BoardController {
         return new ResponseEntity<>(taskDTOs, HttpStatus.OK);
     }
 
-    @PostMapping("add/task")
-    public ResponseEntity<TaskDTO> addTaskToBoard(@RequestParam UUID boardId,
-                                                  @RequestBody Task task) {
-        //Task can be created only in this (Board) controller
-        task = boardService.addTask(boardId, task);
+    @PostMapping("/save")
+    public ResponseEntity<BoardDTO> addBoardToDesk(@RequestParam UUID deskId,
+                                                   @RequestBody Board board) {
+        //Board can be created only in this (Desk) controller
+        board = boardService.addBoardToDesk(deskId, board);
 
-        logger.debug("New task {} was added to board {}", task, task.getBoard());
-        return new ResponseEntity<>(task.toDTO(), HttpStatus.OK);
+        logger.debug("New board {} was added to desk {}", board, board.getDesk());
+        return new ResponseEntity<>(board.toDTO(), HttpStatus.OK);
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBoard (@PathVariable UUID id) {
         boardService.deleteBoard(id);
 

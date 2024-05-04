@@ -87,7 +87,7 @@ public class UserController {
         return new ResponseEntity<>(savedUser.toDTO(), HttpStatus.OK);
     }
 
-    @PostMapping("/update/password")
+    @PutMapping("/update/password")
     public ResponseEntity<UserDTO> updateUserPassword(@RequestBody User userFromRequest,
                                                       @RequestParam String newPassword) {
 

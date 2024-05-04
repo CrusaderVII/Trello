@@ -1,6 +1,8 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dao.model.Desk;
+import org.itone.trello.projectservice.service.DeskService;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.dao.model.Board;
 import org.itone.trello.projectservice.dao.model.Task;
@@ -16,11 +18,11 @@ import java.util.UUID;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
-    private final TaskRepository taskRepository;
+    private final DeskService deskService;
 
-    public BoardServiceImpl(BoardRepository boardRepository, TaskRepository taskRepository) {
+    public BoardServiceImpl(BoardRepository boardRepository, DeskService deskService) {
         this.boardRepository = boardRepository;
-        this.taskRepository = taskRepository;
+        this.deskService = deskService;
     }
 
     @Override
@@ -34,15 +36,17 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.save(board);
     }
 
-    public Task addTask(UUID boardId, Task task) {
-        //Add to set of tasks of gotten board new task.
-        //addTask() method also encapsulates setting board of added task to current board, so we don't need
-        //to call setBoard() method of task object separately.
-        Board board = getBoardById(boardId);
-        board.addTask(task);
+    @Override
+    public Board addBoardToDesk(UUID deskId, Board board) {
+        Desk desk = deskService.getDeskById(deskId);
 
-        saveBoard(board);
-        return taskRepository.save(task);
+        //Add to set of boards of gotten desk new board.
+        //addBoard() method also encapsulates setting desk of added board to current desk, so we don't need
+        //to call setDesk() method of board object separately.
+        desk.addBoard(board);
+
+        deskService.saveDesk(desk);
+        return saveBoard(board);
     }
 
     @Override

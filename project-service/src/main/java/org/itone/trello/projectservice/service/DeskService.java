@@ -8,7 +8,6 @@ import java.util.UUID;
 public interface DeskService {
     Desk getDeskById(UUID id);
     Desk saveDesk(Desk entity);
-    Board addBoardToDesk(UUID deskId, Board board);
-
+    Desk addDeskToProject(UUID projectId, Desk desk);
     void deleteDesk(UUID id);
 }

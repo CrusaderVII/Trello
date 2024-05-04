@@ -36,10 +36,10 @@ public class ProjectController {
         logger.setLevel(Level.DEBUG);
     }
 
-    //TODO: try to change way of creating new desks, boards and tasks (not inside parent controller)
-    //TODO: delete get/all in userController (or implement pageable to it)
-    //TODO: add docker
-    //TODO: @Transactional
+    //TODO: Add docker.
+    //TODO: Change in post request required body from model to dto.
+    //TODO: Refactor @Transactional.
+    //TODO: Multithreading*
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {
@@ -63,7 +63,7 @@ public class ProjectController {
 //        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
 //    }
 
-    @GetMapping("get/{id}/users")
+    @GetMapping("/get/{id}/users")
     public ResponseEntity<Set<UserDTO>> getUsersOnProject(@PathVariable UUID id) {
 
         Project project = projectService.getProjectById(id);
@@ -75,7 +75,7 @@ public class ProjectController {
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
 
-    @GetMapping("get/{id}/desks")
+    @GetMapping("/get/{id}/desks")
     public ResponseEntity<Set<DeskDTO>> getDesksOnProject(@PathVariable UUID id) {
         //Get project from projectServiceImpl by id
         Project project = projectService.getProjectById(id);
@@ -91,7 +91,7 @@ public class ProjectController {
     //When somebody creates a new project, also generates project adres (project_id) in view,
     //that can be copied and then shared with other users. User can insert this adres into something like
     //search_project search field. If adres correct, then user will be added to this project
-    @PostMapping("add/user")
+    @PostMapping("/add/user")
     public ResponseEntity<UserDTO> addUserToProject(@RequestParam UUID userId,
                                                     @RequestParam UUID projectId) {
 
@@ -99,16 +99,6 @@ public class ProjectController {
 
         logger.debug("User {} was added to project with id {}", user, projectId);
         return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
-    }
-
-    @PostMapping("add/desk")
-    public ResponseEntity<DeskDTO> addDeskToProject(@RequestParam UUID projectId,
-                                                    @RequestBody Desk desk) {
-
-        desk = projectService.addDeskToProject(projectId, desk);
-
-        logger.debug("Desk {} was added to project with id {}", desk, projectId);
-        return new ResponseEntity<>(desk.toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/save")

@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.itone.trello.projectservice.dto.BoardDTO;
 import org.itone.trello.projectservice.dto.DeskDTO;
+import org.itone.trello.projectservice.dto.creation.DeskCreationDTO;
 import org.itone.trello.projectservice.util.exception.desk.NoSuchDeskException;
 import org.itone.trello.projectservice.dao.model.Board;
 import org.itone.trello.projectservice.dao.model.Desk;
@@ -53,9 +54,9 @@ public class DeskController {
 
     @PostMapping("/save")
     public ResponseEntity<DeskDTO> addDeskToProject(@RequestParam UUID projectId,
-                                                    @RequestBody Desk desk) {
+                                                    @RequestBody DeskCreationDTO deskCreationDTO) {
 
-        desk = deskService.addDeskToProject(projectId, desk);
+        Desk desk = deskService.addDeskToProject(projectId, deskCreationDTO);
 
         logger.debug("Desk {} was added to project with id {}", desk, projectId);
         return new ResponseEntity<>(desk.toDTO(), HttpStatus.OK);

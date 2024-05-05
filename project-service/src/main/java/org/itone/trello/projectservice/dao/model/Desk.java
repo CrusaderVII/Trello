@@ -2,7 +2,9 @@ package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.itone.trello.projectservice.dto.DeskDTO;
+import org.itone.trello.projectservice.dto.creation.DeskCreationDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "desks")
 @Data
+@NoArgsConstructor
 public class Desk {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,6 +27,10 @@ public class Desk {
     private Project project;
     @OneToMany(mappedBy = "desk", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Board> boards;
+
+    public Desk(String name) {
+        this.name = name;
+    }
 
     public void addBoard(Board board) {
         if (boards == null) boards = new HashSet<>();
@@ -39,6 +46,9 @@ public class Desk {
 
     public DeskDTO toDTO() {
         return new DeskDTO(this.id, this.name, this.project.getName());
+    }
+    public static Desk fromCreationDTO(DeskCreationDTO deskCreationDTO) {
+        return new Desk(deskCreationDTO.name());
     }
 
     @Override

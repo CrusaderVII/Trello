@@ -6,6 +6,7 @@ import org.itone.trello.projectservice.dao.model.Board;
 import org.itone.trello.projectservice.dao.model.Task;
 import org.itone.trello.projectservice.dto.*;
 import org.itone.trello.projectservice.dto.BoardDTO;
+import org.itone.trello.projectservice.dto.creation.BoardCreationDTO;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.service.BoardService;
 import org.slf4j.LoggerFactory;
@@ -54,9 +55,9 @@ public class BoardController {
 
     @PostMapping("/save")
     public ResponseEntity<BoardDTO> addBoardToDesk(@RequestParam UUID deskId,
-                                                   @RequestBody Board board) {
-        //Board can be created only in this (Desk) controller
-        board = boardService.addBoardToDesk(deskId, board);
+                                                   @RequestBody BoardCreationDTO boardCreationDTO) {
+
+        Board board = boardService.addBoardToDesk(deskId, boardCreationDTO);
 
         logger.debug("New board {} was added to desk {}", board, board.getDesk());
         return new ResponseEntity<>(board.toDTO(), HttpStatus.OK);

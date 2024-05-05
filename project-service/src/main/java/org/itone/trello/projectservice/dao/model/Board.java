@@ -2,7 +2,9 @@ package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.itone.trello.projectservice.dto.BoardDTO;
+import org.itone.trello.projectservice.dto.creation.BoardCreationDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,9 +14,10 @@ import java.util.UUID;
 @Entity
 @Table(name = "boards")
 @Data
+@NoArgsConstructor
 public class Board {
 
-    //TODO: implement serializable interface to model
+    //TODO: Implement serializable interface to model.
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true, name = "board_id", updatable = false)
@@ -26,6 +29,10 @@ public class Board {
     private Desk desk;
     @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Task> tasks;
+
+    public Board(String name) {
+        this.name = name;
+    }
 
     public void addTask(Task task) {
         //If it is 1st task we should create a new HashSet before adding new task
@@ -43,6 +50,9 @@ public class Board {
 
     public BoardDTO toDTO() {
         return new BoardDTO(this.id, this.name, this.desk.getName());
+    }
+    public static Board fromCreationDTO(BoardCreationDTO boardCreationDTO) {
+        return new Board(boardCreationDTO.name());
     }
 
     @Override

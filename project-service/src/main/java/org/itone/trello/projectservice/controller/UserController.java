@@ -3,6 +3,7 @@ package org.itone.trello.projectservice.controller;
 import org.itone.trello.projectservice.dao.model.Project;
 import org.itone.trello.projectservice.dto.ProjectDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
+import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
 import org.itone.trello.projectservice.util.exception.user.WrongPasswordException;
@@ -80,18 +81,18 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody User user) {
-        User savedUser = userService.saveUser(user);
+    public ResponseEntity<UserDTO> saveUser(@RequestBody UserCreationDTO userCreationDTO) {
+        User savedUser = userService.saveUser(userCreationDTO);
 
         logger.debug("New user {} was added", savedUser);
         return new ResponseEntity<>(savedUser.toDTO(), HttpStatus.OK);
     }
 
     @PutMapping("/update/password")
-    public ResponseEntity<UserDTO> updateUserPassword(@RequestBody User userFromRequest,
+    public ResponseEntity<UserDTO> updateUserPassword(@RequestBody UserCreationDTO userFromRequestDTO,
                                                       @RequestParam String newPassword) {
 
-        User userWithNewPassword = userService.updateUserPassword(userFromRequest, newPassword);
+        User userWithNewPassword = userService.updateUserPassword(userFromRequestDTO, newPassword);
 
         logger.debug("User {} changed the password successfully", userWithNewPassword);
         return new ResponseEntity<>(userWithNewPassword.toDTO(), HttpStatus.OK);

@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import org.itone.trello.projectservice.dto.DeskDTO;
 import org.itone.trello.projectservice.dto.ProjectDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
+import org.itone.trello.projectservice.dto.creation.ProjectCreationDTO;
 import org.itone.trello.projectservice.util.exception.project.NoSuchProjectException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
 import org.itone.trello.projectservice.dao.model.Desk;
@@ -37,9 +38,9 @@ public class ProjectController {
     }
 
     //TODO: Add docker.
-    //TODO: Change in post request required body from model to dto.
     //TODO: Refactor @Transactional.
-    //TODO: Multithreading*
+    //TODO: Multithreading*.
+    //TODO: Add controller to see all tasks of user to user controller.
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {
@@ -102,11 +103,11 @@ public class ProjectController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project) {
-        Project savedProject = projectService.saveProject(project);
+    public ResponseEntity<ProjectDTO> saveProject(@RequestBody ProjectCreationDTO projectCreationDTO) {
+        Project savedProject = projectService.saveProject(projectCreationDTO);
 
         logger.debug("New project {} was created", savedProject);
-        return new ResponseEntity<>(project.toDTO(), HttpStatus.OK);
+        return new ResponseEntity<>(savedProject.toDTO(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -114,7 +115,7 @@ public class ProjectController {
         projectService.deleteProject(id);
 
         logger.debug("Project with id {} was deleted successfully", id);
-        return new ResponseEntity<String>("Project with "+id+" deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<String>("Project with id "+id+" deleted successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/remove/{projectId}/user")

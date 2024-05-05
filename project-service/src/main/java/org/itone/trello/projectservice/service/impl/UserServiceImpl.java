@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
 import org.itone.trello.projectservice.util.exception.user.WrongPasswordException;
@@ -54,28 +55,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser (User entity) throws InvalidDataException {
+    public User saveUser (UserCreationDTO userCreationDTO) throws InvalidDataException {
         try {
+            //Create new user object from gotten userCreationDTO object from request
+            User user = User.fromUserCreationDTO(userCreationDTO);
+
             //validate data of a new user
-            userValidationService.validate(entity);
+            userValidationService.validate(user);
 
             //encode password of a new user if validation was successful
-            entity.setPassword(encodePassword(entity.getPassword()));
-            return userRepository.save(entity);
+            user.setPassword(encodePassword(user.getPassword()));
+            return userRepository.save(user);
         } catch (InvalidDataException exception) {
             throw new InvalidDataException(exception.getMessage());
         }
     }
 
     @Override
-    public User updateUserPassword(User userFromRequest, String newPassword) throws NoSuchUserException,
+    public User updateUserPassword(UserCreationDTO userFromRequestDTO, String newPassword) throws NoSuchUserException,
             WrongPasswordException, InvalidDataException{
+        //Create new user object from gotten userCreationDTO object from request
+        User userFromRequest = User.fromUserCreationDTO(userFromRequestDTO);
+
         //Check if user requesting password change is not some criminal
         User user = authUser(userFromRequest.getEmail(), userFromRequest.getPassword());
 
         //Set new password to user and then use .saveUser() method, because it encapsulates data validation
         user.setPassword(newPassword);
-        return saveUser(user);
+        return updateUser(user);
     }
 
     @Override

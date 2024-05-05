@@ -2,7 +2,9 @@ package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.itone.trello.projectservice.dto.UserDTO;
+import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Data
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,6 +34,12 @@ public class User {
     private Set<Project> projects;
     @ManyToMany(mappedBy = "users")
     private Set<Task> tasks;
+
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
     public void addProject(Project project) {
         if (this.projects == null) this.projects = new HashSet<>();
@@ -53,6 +62,10 @@ public class User {
 
     public UserDTO toDTO () {
         return new UserDTO(this.id, this.name, this.email);
+    }
+
+    public static User fromUserCreationDTO(UserCreationDTO userCreationDTO) {
+        return new User(userCreationDTO.name(), userCreationDTO.email(), userCreationDTO.password());
     }
 
     @Override

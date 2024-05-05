@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.dao.model.Desk;
+import org.itone.trello.projectservice.dto.creation.BoardCreationDTO;
 import org.itone.trello.projectservice.service.DeskService;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.dao.model.Board;
@@ -32,21 +33,22 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board saveBoard(Board board) {
+    public Board updateBoard(Board board) {
         return boardRepository.save(board);
     }
 
     @Override
-    public Board addBoardToDesk(UUID deskId, Board board) {
+    public Board addBoardToDesk(UUID deskId, BoardCreationDTO boardCreationDTO) {
         Desk desk = deskService.getDeskById(deskId);
+        Board board = Board.fromCreationDTO(boardCreationDTO);
 
         //Add to set of boards of gotten desk new board.
         //addBoard() method also encapsulates setting desk of added board to current desk, so we don't need
         //to call setDesk() method of board object separately.
         desk.addBoard(board);
 
-        deskService.saveDesk(desk);
-        return saveBoard(board);
+        deskService.updateDesk(desk);
+        return updateBoard(board);
     }
 
     @Override

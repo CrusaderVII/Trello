@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dto.creation.ProjectCreationDTO;
 import org.itone.trello.projectservice.util.exception.project.NoSuchProjectException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
 import org.itone.trello.projectservice.dao.model.Desk;
@@ -33,8 +34,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project saveProject(Project entity) {
-        return projectRepository.save(entity);
+    public Project saveProject(ProjectCreationDTO projectCreationDTO) {
+        //Create new Project object from gotten projectCreation dto
+        Project project = Project.fromCreationDTO(projectCreationDTO);
+        return projectRepository.save(project);
+    }
+
+    @Override
+    public Project updateProject(Project project) {
+        return projectRepository.save(project);
     }
 
     @Override
@@ -49,7 +57,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         //Save changes to project and user entities to DB. For user entity use updateUser() method,
         //because using saveUser() method will call UserValidationService inside
-        saveProject(project);
+        updateProject(project);
         return  userService.updateUser(user);
     }
 
@@ -65,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         //Save changes to project and user entities to DB. For user entity use updateUser() method,
         //because using saveUser() method will call UserValidationService inside
-        saveProject(project);
+        updateProject(project);
         userService.updateUser(user);
     }
 

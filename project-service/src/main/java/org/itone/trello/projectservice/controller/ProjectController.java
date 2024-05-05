@@ -40,7 +40,7 @@ public class ProjectController {
     //TODO: Add docker.
     //TODO: Refactor @Transactional.
     //TODO: Multithreading*.
-    //TODO: Add controller to see all tasks of user to user controller.
+    //TODO: Implement serializable interface to model?
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {

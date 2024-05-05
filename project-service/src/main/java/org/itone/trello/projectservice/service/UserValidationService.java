@@ -44,8 +44,4 @@ public class UserValidationService {
         if (NAME_FORMAT_PATTERN.matcher(name).matches()) return true;
         else throw new InvalidNameException();
     }
-
-    public boolean checkPassword(String rawPassword, String encodedPassword) {
-        return encoder.matches(rawPassword, encodedPassword);
-    }
 }

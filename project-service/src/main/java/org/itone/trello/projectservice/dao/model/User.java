@@ -24,7 +24,8 @@ public class User {
     @Column(name = "user_name", nullable = false)
     private String name;
 
-    //TODO: study sql indexes and implement them
+    //Don't use SQL index on this field, because it is effective when our DB is big and data is saved to DB on plan.
+    //But here that is not the case.
     @Column(name = "user_email", nullable = false, unique = true)
     private String email;
 

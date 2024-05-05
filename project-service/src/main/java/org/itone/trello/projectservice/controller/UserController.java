@@ -1,7 +1,9 @@
 package org.itone.trello.projectservice.controller;
 
 import org.itone.trello.projectservice.dao.model.Project;
+import org.itone.trello.projectservice.dao.model.Task;
 import org.itone.trello.projectservice.dto.ProjectDTO;
+import org.itone.trello.projectservice.dto.TaskDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
 import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
@@ -67,6 +69,18 @@ public class UserController {
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{id}/tasks")
+    public ResponseEntity<Set<TaskDTO>> getTasksOfUser(@PathVariable UUID id) {
+        User user = userService.getUserById(id);
+
+        Set<TaskDTO> taskDTOs = user.getTasks()
+                .stream()
+                .map(Task::toDTO)
+                .collect(Collectors.toSet());
+
+        return new ResponseEntity<>(taskDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/auth")

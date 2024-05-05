@@ -1,13 +1,13 @@
 <configuration>
 
     <property name="LOGS" value="./project-service/logs" />
+    <conversionRule conversionWord="customcolor" converterClass="org.itone.trello.projectservice.configuration.LogbackColorful"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>
-                %d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %cyan(%logger{15}) - %msg %n
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %magenta([%thread]) %customcolor(%-5level) %cyan(%logger{15}) - %msg%n
             </pattern>
-        </layout>
+        </encoder>
     </appender>
 
     <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">

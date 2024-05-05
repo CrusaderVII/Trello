@@ -17,7 +17,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Board {
 
-    //TODO: Implement serializable interface to model.
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true, name = "board_id", updatable = false)

@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
+import org.itone.trello.projectservice.util.exception.user.EmailAlreadyExistsException;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
 import org.itone.trello.projectservice.util.exception.user.WrongPasswordException;
@@ -9,6 +10,7 @@ import org.itone.trello.projectservice.dao.model.User;
 import org.itone.trello.projectservice.dao.repository.UserRepository;
 import org.itone.trello.projectservice.service.UserService;
 import org.itone.trello.projectservice.service.UserValidationService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,7 +57,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser (UserCreationDTO userCreationDTO) throws InvalidDataException {
+    public User saveUser (UserCreationDTO userCreationDTO) throws InvalidDataException, EmailAlreadyExistsException {
         try {
             //Create new user object from gotten userCreationDTO object from request
             User user = User.fromUserCreationDTO(userCreationDTO);
@@ -66,8 +68,8 @@ public class UserServiceImpl implements UserService {
             //encode password of a new user if validation was successful
             user.setPassword(encodePassword(user.getPassword()));
             return userRepository.save(user);
-        } catch (InvalidDataException exception) {
-            throw new InvalidDataException(exception.getMessage());
+        } catch (InvalidDataException exc) {
+            throw new InvalidDataException(exc.getMessage());
         }
     }
 

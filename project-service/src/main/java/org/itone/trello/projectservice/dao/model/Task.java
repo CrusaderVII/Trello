@@ -2,7 +2,9 @@ package org.itone.trello.projectservice.dao.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.itone.trello.projectservice.dto.TaskDTO;
+import org.itone.trello.projectservice.dto.creation.TaskCreationDTO;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "tasks")
 @Data
+@NoArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,6 +32,11 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "FK_board_id", nullable = false)
     private Board board;
+
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
     public void addUser(User user) {
         if (this.users == null) this.users = new HashSet<>();
@@ -52,6 +60,9 @@ public class Task {
 
     public TaskDTO toDTO () {
         return new TaskDTO(this.id, this.name, this.description, this.board.getName());
+    }
+    public static Task fromCreationDTO(TaskCreationDTO taskCreationDTO) {
+        return new Task(taskCreationDTO.name(), taskCreationDTO.description());
     }
 
     @Override

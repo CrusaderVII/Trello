@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.itone.trello.projectservice.dto.TaskDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
+import org.itone.trello.projectservice.dto.creation.TaskCreationDTO;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.util.exception.task.NoSuchTaskException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
@@ -55,9 +56,9 @@ public class TaskController {
 
     @PostMapping("/save")
     public ResponseEntity<TaskDTO> addTaskToBoard(@RequestParam UUID boardId,
-                                                  @RequestBody Task task) {
+                                                  @RequestBody TaskCreationDTO taskCreationDTO) {
 
-        task = taskService.addTaskToBoard(boardId, task);
+        Task task = taskService.addTaskToBoard(boardId, taskCreationDTO);
 
         logger.debug("New task {} was added to board {}", task, task.getBoard());
         return new ResponseEntity<>(task.toDTO(), HttpStatus.OK);

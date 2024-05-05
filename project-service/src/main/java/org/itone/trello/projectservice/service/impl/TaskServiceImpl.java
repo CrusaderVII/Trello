@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dto.creation.TaskCreationDTO;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.util.exception.task.NoSuchTaskException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
@@ -36,21 +37,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task saveTask(Task entity) {
-        return taskRepository.save(entity);
+    public Task updateTask(Task task) {
+        return taskRepository.save(task);
     }
 
     @Override
-    public Task addTaskToBoard(UUID boardId, Task task) {
+    public Task addTaskToBoard(UUID boardId, TaskCreationDTO taskCreationDTO) {
         Board board = boardService.getBoardById(boardId);
+        Task task = Task.fromCreationDTO(taskCreationDTO);
 
         //Add to set of tasks of gotten board new task.
         //addTask() method also encapsulates setting board of added task to current board, so we don't need
         //to call setBoard() method of task object separately.
         board.addTask(task);
 
-        boardService.saveBoard(board);
-        return saveTask(task);
+        boardService.updateBoard(board);
+        return updateTask(task);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
 
         task.addUser(user);
 
-        saveTask(task);
+        updateTask(task);
         return userService.updateUser(user);
     }
 
@@ -77,9 +79,9 @@ public class TaskServiceImpl implements TaskService {
         oldBoard.removeTask(task);
         newBoard.addTask(task);
 
-        boardService.saveBoard(oldBoard);
-        boardService.saveBoard(newBoard);
-        return saveTask(task);
+        boardService.updateBoard(oldBoard);
+        boardService.updateBoard(newBoard);
+        return updateTask(task);
     }
 
     @Override
@@ -90,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
         //removeUser() method also encapsulate removing this task from set of tasks of given user
         task.removeUser(userId);
 
-        saveTask(task);
+        updateTask(task);
         userService.updateUser(user);
     }
 

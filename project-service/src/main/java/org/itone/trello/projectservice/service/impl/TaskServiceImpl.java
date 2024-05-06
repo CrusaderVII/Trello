@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dao.TaskDAO;
 import org.itone.trello.projectservice.dto.creation.TaskCreationDTO;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.util.exception.task.NoSuchTaskException;
@@ -20,84 +21,44 @@ import java.util.UUID;
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
-    private final TaskRepository taskRepository;
-    private final UserService userService;
-    private final BoardService boardService;
+    private final TaskDAO taskDAO;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, BoardService boardService) {
-        this.taskRepository = taskRepository;
-        this.userService = userService;
-        this.boardService = boardService;
+    public TaskServiceImpl(TaskDAO taskDAO) {
+        this.taskDAO = taskDAO;
     }
 
     @Override
     public Task getTaskById(UUID id) throws NoSuchTaskException{
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new NoSuchTaskException("id "+id));
+        return taskDAO.findById(id);
     }
 
     @Override
     public Task updateTask(Task task) {
-        return taskRepository.save(task);
+        return taskDAO.save(task);
     }
 
     @Override
-    public Task addTaskToBoard(UUID boardId, TaskCreationDTO taskCreationDTO) {
-        Board board = boardService.getBoardById(boardId);
-        Task task = Task.fromCreationDTO(taskCreationDTO);
-
-        //Add to set of tasks of gotten board new task.
-        //addTask() method also encapsulates setting board of added task to current board, so we don't need
-        //to call setBoard() method of task object separately.
-        board.addTask(task);
-
-        boardService.updateBoard(board);
-        return updateTask(task);
+    public Task addTaskToBoard(UUID boardId, TaskCreationDTO taskCreationDTO) throws NoSuchBoardException{
+        return taskDAO.addTaskToBoard(boardId, taskCreationDTO);
     }
 
     @Override
     public User addUserToTask(UUID taskId, UUID userId) throws NoSuchTaskException, NoSuchUserException {
-        Task task = getTaskById(taskId);
-        User user = userService.getUserById(userId);
-
-        task.addUser(user);
-
-        updateTask(task);
-        return userService.updateUser(user);
+        return taskDAO.addUserToTask(taskId, userId);
     }
 
     @Override
     public Task changeBoard(UUID taskId, UUID newBoardId) throws NoSuchTaskException, NoSuchBoardException {
-        Task task = getTaskById(taskId);
-
-        //Get old board of task from gotten task and get new board using newBoardId
-        Board oldBoard = task.getBoard();
-        Board newBoard = boardService.getBoardById(newBoardId);
-
-        //Remove task from old board and add then add task to new board by calling addTask() method.
-        //This method also encapsulate setting board of added task to current board
-        oldBoard.removeTask(task);
-        newBoard.addTask(task);
-
-        boardService.updateBoard(oldBoard);
-        boardService.updateBoard(newBoard);
-        return updateTask(task);
+        return taskDAO.changeBoard(taskId, newBoardId);
     }
 
     @Override
     public void removeUserFromTask(UUID taskId, UUID userId) throws NoSuchTaskException, NoSuchUserException {
-        Task task = getTaskById(taskId);
-        User user = userService.getUserById(userId);
-
-        //removeUser() method also encapsulate removing this task from set of tasks of given user
-        task.removeUser(userId);
-
-        updateTask(task);
-        userService.updateUser(user);
+        taskDAO.removeUserFromTask(taskId, userId);
     }
 
     @Override
     public void deleteTask(UUID id) {
-        taskRepository.deleteById(id);
+        taskDAO.deleteById(id);
     }
 }

@@ -1,5 +1,6 @@
 package org.itone.trello.projectservice.service;
 
+import org.itone.trello.projectservice.dao.UserDAO;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
 import org.itone.trello.projectservice.util.exception.user.InvalidEmailException;
 import org.itone.trello.projectservice.util.exception.user.InvalidNameException;

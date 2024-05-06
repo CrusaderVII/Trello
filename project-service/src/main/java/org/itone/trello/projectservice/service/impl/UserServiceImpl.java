@@ -1,6 +1,7 @@
 package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.itone.trello.projectservice.dao.UserDAO;
 import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
 import org.itone.trello.projectservice.util.exception.user.EmailAlreadyExistsException;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
@@ -20,28 +21,25 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
     private final UserValidationService userValidationService;
     private final BCryptPasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository, UserValidationService userValidationService) {
-        this.userRepository = userRepository;
+    public UserServiceImpl(UserDAO userDAO, UserValidationService userValidationService) {
+        this.userDAO = userDAO;
         this.userValidationService = userValidationService;
         this.encoder = new BCryptPasswordEncoder(5);
     }
 
     @Override
     public User getUserById(UUID id) throws NoSuchUserException{
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchUserException("id "+id));
+        return userDAO.findById(id);
     }
 
     @Override
     public User authUser(String email, String rawPassword) throws NoSuchUserException, WrongPasswordException{
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchUserException("email "+email));
+        User user = userDAO.findByEmail(email);
 
         if (encoder.matches(rawPassword, user.getPassword())) return user;
         else throw new WrongPasswordException();
@@ -50,10 +48,7 @@ public class UserServiceImpl implements UserService {
     //Page contains data about 20 users
     @Override
     public List<User> getAllUsers(int page) {
-        Pageable pageable = PageRequest.of(page, 20);
-        return userRepository.findAllUsers(pageable)
-                .stream()
-                .toList();
+        return userDAO.findAll(page);
     }
 
     @Override
@@ -67,29 +62,37 @@ public class UserServiceImpl implements UserService {
 
             //encode password of a new user if validation was successful
             user.setPassword(encodePassword(user.getPassword()));
-            return userRepository.save(user);
+            return userDAO.save(user);
         } catch (InvalidDataException exc) {
             throw new InvalidDataException(exc.getMessage());
+        } catch (DataIntegrityViolationException exc) {
+            throw new EmailAlreadyExistsException(userCreationDTO.email());
         }
     }
 
     @Override
     public User updateUserPassword(UserCreationDTO userFromRequestDTO, String newPassword) throws NoSuchUserException,
-            WrongPasswordException, InvalidDataException{
+            WrongPasswordException, InvalidDataException {
         //Create new user object from gotten userCreationDTO object from request
         User userFromRequest = User.fromUserCreationDTO(userFromRequestDTO);
 
         //Check if user requesting password change is not some criminal
         User user = authUser(userFromRequest.getEmail(), userFromRequest.getPassword());
 
-        //Set new password to user and then use .saveUser() method, because it encapsulates data validation
+        //Set new password to user
         user.setPassword(newPassword);
-        return updateUser(user);
+
+        //Check if new password is valid
+        userValidationService.validate(user);
+
+        //Set to user encoded password before saving changes to DB
+        user.setPassword(encodePassword(newPassword));
+        return userDAO.save(user);
     }
 
     @Override
-    public User updateUser(User entity) {
-        return userRepository.save(entity);
+    public User updateUser(User user) {
+        return userDAO.save(user);
     }
 
     @Override
@@ -109,7 +112,7 @@ public class UserServiceImpl implements UserService {
 
         //Save changes to user and then delete user
         updateUser(user);
-        userRepository.deleteById(id);
+        userDAO.deleteById(id);
     }
 
     private String encodePassword(String rawPassword) {

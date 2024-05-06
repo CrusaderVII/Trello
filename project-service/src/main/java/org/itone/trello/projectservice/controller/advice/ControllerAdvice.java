@@ -44,11 +44,10 @@ public class ControllerAdvice {
                 .body(new ErrorMessage(exc.getMessage()));
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    ResponseEntity<ErrorMessage> constraintViolationException(DataIntegrityViolationException exc) {
-        Exception exception = new EmailAlreadyExistsException();
-        logger.error(exception.getMessage());
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    ResponseEntity<ErrorMessage> constraintViolationException(EmailAlreadyExistsException exc) {
+        logger.error(exc.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorMessage(exception.getMessage()));
+                .body(new ErrorMessage(exc.getMessage()));
     }
 }

@@ -72,7 +72,7 @@ public class Board {
         return "Board{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", desk=" + desk +
+                ", desk=" + desk.getName() +
                 '}';
     }
 }

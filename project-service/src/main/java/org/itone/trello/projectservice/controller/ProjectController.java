@@ -38,9 +38,9 @@ public class ProjectController {
     }
 
     //TODO: Add docker.
-    //TODO: Refactor @Transactional.
     //TODO: Multithreading*.
-    //TODO: Implement serializable interface to model?
+    //TODO in update password controller change required body from creation dto to update dto.
+    
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {
@@ -125,9 +125,8 @@ public class ProjectController {
         projectService.removeUserFromProject(projectId, userId);
 
         logger.debug("User with id {} was removed from project with id {}", userId, projectId);
-        return new ResponseEntity<>("User with id "+userId+" successfully removed from project "+projectId,
+        return new ResponseEntity<>("User with id "+userId+" successfully removed from project with id "+projectId,
                 HttpStatus.OK);
-
     }
 
 }

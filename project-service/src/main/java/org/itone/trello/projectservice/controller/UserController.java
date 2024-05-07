@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.controller;
 
 import org.itone.trello.projectservice.dao.model.Project;
 import org.itone.trello.projectservice.dao.model.Task;
+import org.itone.trello.projectservice.dto.AuthDTO;
 import org.itone.trello.projectservice.dto.ProjectDTO;
 import org.itone.trello.projectservice.dto.TaskDTO;
 import org.itone.trello.projectservice.dto.UserDTO;
@@ -84,12 +85,11 @@ public class UserController {
     }
 
     @GetMapping("/auth")
-    public ResponseEntity<UserDTO> authUser(@RequestParam String email,
-                                            @RequestParam String password) {
+    public ResponseEntity<UserDTO> authUser(@RequestBody AuthDTO authDTO) {
         //Call userServiceImpl, that encapsulates finding user by email and then
         //using BCryptPasswordEncoder check if passwords match. In case wrong email or password
         //exception will be thrown
-        User user = userService.authUser(email, password);
+        User user = userService.authUser(authDTO);
 
         return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
     }
@@ -103,10 +103,10 @@ public class UserController {
     }
 
     @PutMapping("/update/password")
-    public ResponseEntity<UserDTO> updateUserPassword(@RequestBody UserCreationDTO userFromRequestDTO,
+    public ResponseEntity<UserDTO> updateUserPassword(@RequestBody AuthDTO authDTO,
                                                       @RequestParam String newPassword) {
 
-        User userWithNewPassword = userService.updateUserPassword(userFromRequestDTO, newPassword);
+        User userWithNewPassword = userService.updateUserPassword(authDTO, newPassword);
 
         logger.debug("User {} changed the password successfully", userWithNewPassword);
         return new ResponseEntity<>(userWithNewPassword.toDTO(), HttpStatus.OK);

@@ -11,7 +11,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-//I chose @Repository annotation for DAO, because Spring manual said this
+//I chose @Repository annotation for DAO, because Spring manual said this. I also moved all transactions to DAO layer,
+//because in using @Transactional on services has a bad effect on performance (with time and growth of application
+//adding more business logic to services will have more bad impact on performance).
+//And I don't use try/catch blocks, because than transactions won't roll back due to work mechanism of
+//@Transactional annotation.
 @Transactional
 @Repository
 public class UserDAO {

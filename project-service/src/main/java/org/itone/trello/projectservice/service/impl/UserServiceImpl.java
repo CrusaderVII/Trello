@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.dao.UserDAO;
+import org.itone.trello.projectservice.dto.AuthDTO;
 import org.itone.trello.projectservice.dto.creation.UserCreationDTO;
 import org.itone.trello.projectservice.util.exception.user.EmailAlreadyExistsException;
 import org.itone.trello.projectservice.util.exception.user.InvalidDataException;
@@ -38,10 +39,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User authUser(String email, String rawPassword) throws NoSuchUserException, WrongPasswordException{
-        User user = userDAO.findByEmail(email);
+    public User authUser(AuthDTO authDTO) throws NoSuchUserException, WrongPasswordException{
+        User user = userDAO.findByEmail(authDTO.email());
 
-        if (encoder.matches(rawPassword, user.getPassword())) return user;
+        if (encoder.matches(authDTO.password(), user.getPassword())) return user;
         else throw new WrongPasswordException();
     }
 
@@ -71,13 +72,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUserPassword(UserCreationDTO userFromRequestDTO, String newPassword) throws NoSuchUserException,
+    public User updateUserPassword(AuthDTO authDTO, String newPassword) throws NoSuchUserException,
             WrongPasswordException, InvalidDataException {
-        //Create new user object from gotten userCreationDTO object from request
-        User userFromRequest = User.fromUserCreationDTO(userFromRequestDTO);
-
         //Check if user requesting password change is not some criminal
-        User user = authUser(userFromRequest.getEmail(), userFromRequest.getPassword());
+        User user = authUser(authDTO);
 
         //Set new password to user
         user.setPassword(newPassword);

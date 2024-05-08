@@ -1,15 +1,10 @@
 package org.itone.trello.projectservice.service.impl;
 
-import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.dao.BoardDAO;
-import org.itone.trello.projectservice.dao.model.Desk;
+import org.itone.trello.projectservice.dao.impl.BoardDAOImpl;
 import org.itone.trello.projectservice.dto.creation.BoardCreationDTO;
-import org.itone.trello.projectservice.service.DeskService;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.dao.model.Board;
-import org.itone.trello.projectservice.dao.model.Task;
-import org.itone.trello.projectservice.dao.repository.BoardRepository;
-import org.itone.trello.projectservice.dao.repository.TaskRepository;
 import org.itone.trello.projectservice.service.BoardService;
 import org.springframework.stereotype.Service;
 

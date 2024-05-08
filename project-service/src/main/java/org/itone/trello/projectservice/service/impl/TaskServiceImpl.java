@@ -2,17 +2,14 @@ package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.dao.TaskDAO;
+import org.itone.trello.projectservice.dao.impl.TaskDAOImpl;
 import org.itone.trello.projectservice.dto.creation.TaskCreationDTO;
 import org.itone.trello.projectservice.util.exception.board.NoSuchBoardException;
 import org.itone.trello.projectservice.util.exception.task.NoSuchTaskException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;
-import org.itone.trello.projectservice.dao.model.Board;
 import org.itone.trello.projectservice.dao.model.Task;
 import org.itone.trello.projectservice.dao.model.User;
-import org.itone.trello.projectservice.dao.repository.TaskRepository;
-import org.itone.trello.projectservice.service.BoardService;
 import org.itone.trello.projectservice.service.TaskService;
-import org.itone.trello.projectservice.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

@@ -2,6 +2,7 @@ package org.itone.trello.projectservice.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.itone.trello.projectservice.dao.ProjectDAO;
+import org.itone.trello.projectservice.dao.impl.ProjectDAOImpl;
 import org.itone.trello.projectservice.dto.creation.ProjectCreationDTO;
 import org.itone.trello.projectservice.util.exception.project.NoSuchProjectException;
 import org.itone.trello.projectservice.util.exception.user.NoSuchUserException;

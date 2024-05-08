@@ -39,10 +39,7 @@ public class ProjectController {
 
     //TODO: Add docker.
     //TODO: Multithreading*.
-    //TODO: In update password controller change required body from creation dto to update dto.
-    //TODO: Add loginDTO to auth and change password controller
-    //TODO: add interfaces to DAO (postgresDAO -> mysqlDAO)
-    //TODO: cypher password for db
+    //TODO: Add tests.
     
 
     @GetMapping("/get/{id}")

@@ -38,3 +38,4 @@ build/
 .DS_Store
 /project-service/logs/
 /project-service/src/main/resources/passwordsTEST.txt
+/task-service/logs/

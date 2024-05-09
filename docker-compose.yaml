@@ -1,0 +1,66 @@
+version: "2"
+services:
+  postgres-db:
+    container_name: postgres-db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      trello:
+        aliases:
+          - "database"
+
+  discovery-service:
+    container_name: discovery-service
+    build:
+      context: discovery-service
+      dockerfile: Dockerfile
+    image: discovery-service:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - trello
+
+  config-service:
+    container_name: config-service
+    build:
+      context: config-service
+      dockerfile: Dockerfile
+    image: config-service:latest
+    ports:
+      - "8888:8888"
+    networks:
+      - trello
+
+  #Here we configure our main task service
+  task-service:
+    #Here we specify container name
+    container_name: task-service
+    #Here we describe which dockerfile and where it located (context field) use to build image of this service
+    build:
+      context: task-service
+      dockerfile: Dockerfile
+    #Here we specify name of the image
+    image: task-service:latest
+    #Here we specify ports ---
+    ports:
+      - "8080:8080"
+    #Here we say what network this service should use
+    depends_on:
+      - postgres-db
+    networks:
+      - trello
+#    develop:
+#      watch:
+#        - action: sync
+#          path: /tmp
+#          target: task-service/target
+
+
+#Here we define network and it's name
+networks:
+  trello:
+    driver: bridge

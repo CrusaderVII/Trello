@@ -34,10 +34,8 @@ public class ProjectController {
         logger.setLevel(Level.DEBUG);
     }
 
-    //TODO: Add docker.
     //TODO: Multithreading*.
     //TODO: Add tests.
-    
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {
@@ -46,20 +44,6 @@ public class ProjectController {
         return new ResponseEntity<>(project.toDTO(), HttpStatus.OK);
 
     }
-//    @GetMapping("/get/all")
-//    public ResponseEntity<List<ProjectDTO>> getAllProjects() {
-//        //Get list of all projects
-//        List<Project> projects = projectService.getAllProjects();
-//
-//        //Generate list of projectDTOs from gotten list of projects in stream
-//        List<ProjectDTO> projectDTOs = projects.stream()
-//                .map(project -> new ProjectDTO(project.getId(),
-//                                               project.getName(),
-//                                               project.getDescription()))
-//                .toList();
-//
-//        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
-//    }
 
     @GetMapping("/get/{id}/users")
     public ResponseEntity<Set<UserDTO>> getUsersOnProject(@PathVariable UUID id) {

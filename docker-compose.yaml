@@ -10,6 +10,7 @@ services:
       - "5432:5432"
     networks:
       trello:
+        #Here we set host name that other services will use
         aliases:
           - "database"
 

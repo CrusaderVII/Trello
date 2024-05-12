@@ -1,4 +1,4 @@
-version: "2"
+version: "3.8"
 services:
   postgres-db:
     container_name: postgres-db
@@ -8,6 +8,13 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    #Here we specify healthcheck operation (what command executes to test, number of times, interval and starting time)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 20s
+      retries: 2
+      start_period: 20s
+      timeout: 10s
     networks:
       trello:
         #Here we set host name that other services will use
@@ -22,6 +29,15 @@ services:
     image: discovery-service:latest
     ports:
       - "8761:8761"
+    healthcheck:
+      #Send request to this url only once and behave like a web spider (not download pages).
+      #Exit 1 ensures exit code 1 on failure.
+      #No-verbose means that in case of error it will be printed
+      test: wget --no-verbose --tries=1 --spider http://localhost:8761/actuator/health || exit 1
+      interval: 20s
+      retries: 2
+      start_period: 20s
+      timeout: 10s
     networks:
       - trello
 
@@ -33,8 +49,17 @@ services:
     image: config-service:latest
     ports:
       - "8888:8888"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8888/actuator/health
+      interval: 20s
+      retries: 2
+      start_period: 20s
+      timeout: 10s
     networks:
       - trello
+    depends_on:
+      discovery-service:
+        condition: service_healthy
 
   #Here we configure our main task service
   task-service:
@@ -49,16 +74,17 @@ services:
     #Here we specify ports ---
     ports:
       - "8080:8080"
-    #Here we say what network this service should use
+    #Here we say what services should be running to this service (task-service) to be able to run
     depends_on:
-      - postgres-db
+      postgres-db:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+    #Here we say what network this service should use
     networks:
       - trello
-#    develop:
-#      watch:
-#        - action: sync
-#          path: /tmp
-#          target: task-service/target
 
 
 #Here we define network and it's name

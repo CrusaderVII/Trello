@@ -59,7 +59,7 @@ public class Task {
     }
 
     public TaskDTO toDTO () {
-        return new TaskDTO(this.id, this.name, this.description, this.board.getName());
+        return new TaskDTO(this.id, this.name, this.description, this.board.getId());
     }
     public static Task fromCreationDTO(TaskCreationDTO taskCreationDTO) {
         return new Task(taskCreationDTO.name(), taskCreationDTO.description());

@@ -45,7 +45,7 @@ public class Desk {
     }
 
     public DeskDTO toDTO() {
-        return new DeskDTO(this.id, this.name, this.project.getName());
+        return new DeskDTO(this.id, this.name, this.project.getId());
     }
     public static Desk fromCreationDTO(DeskCreationDTO deskCreationDTO) {
         return new Desk(deskCreationDTO.name());

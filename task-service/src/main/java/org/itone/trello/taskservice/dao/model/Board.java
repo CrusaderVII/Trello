@@ -48,7 +48,7 @@ public class Board {
     }
 
     public BoardDTO toDTO() {
-        return new BoardDTO(this.id, this.name, this.desk.getName());
+        return new BoardDTO(this.id, this.name, this.desk.getId());
     }
     public static Board fromCreationDTO(BoardCreationDTO boardCreationDTO) {
         return new Board(boardCreationDTO.name());

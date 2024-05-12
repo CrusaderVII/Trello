@@ -34,8 +34,10 @@ public class ProjectController {
         logger.setLevel(Level.DEBUG);
     }
 
-    //TODO: Multithreading*.
-    //TODO: Add tests.
+    //TODO: Ask how to encode password to db in config server
+    //TODO: What should return delete request
+    //TODO: Add documentation in swagger
+    //TODO: Change parent name to id in DTOs
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {

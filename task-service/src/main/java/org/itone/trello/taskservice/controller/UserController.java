@@ -109,11 +109,10 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+    public void deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
 
         logger.debug("User with id {} was successfully deleted", id);
-        return new ResponseEntity<>("User with id "+id+" deleted successfully", HttpStatus.OK);
     }
 
 }

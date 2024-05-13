@@ -62,10 +62,9 @@ public class BoardController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteBoard (@PathVariable UUID id) {
+    public void deleteBoard (@PathVariable UUID id) {
         boardService.deleteBoard(id);
 
         logger.debug("Board with id {} was deleted successfully", id);
-        return new ResponseEntity<>("Board with "+id+" deleted successfully", HttpStatus.OK);
     }
 }

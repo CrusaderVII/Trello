@@ -61,10 +61,9 @@ public class DeskController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteDesk(@PathVariable UUID id) {
+    public void deleteDesk(@PathVariable UUID id) {
         deskService.deleteDesk(id);
 
         logger.debug("Desk with id {} was deleted successfully", id);
-        return new ResponseEntity<>("Desk with id "+id+" deleted successfully", HttpStatus.OK);
     }
 }

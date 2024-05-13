@@ -7,6 +7,8 @@ spring:
         git:
           uri: https://github.com/CrusaderVII/Trello-config.git
           default-label: main
+encrypt:
+  key: APODNU3093r2rbjzxcn09u213asdhy08WRFH
 
 server:
   port: 8888

@@ -81,19 +81,18 @@ public class TaskController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable UUID id) {
+    public void deleteTask(@PathVariable UUID id) {
         taskService.deleteTask(id);
 
         logger.debug("Task with id {} was deleted successfully", id);
-        return new ResponseEntity<>("Task with id "+id+" was successfully deleted", HttpStatus.OK);
     }
 
-    @DeleteMapping("/remove/user")
-    public ResponseEntity<String> removeUserFromTask(@RequestParam UUID taskId,
+    @PutMapping("/remove/user")
+    public void removeUserFromTask(@RequestParam UUID taskId,
                                                      @RequestParam UUID userId) {
         taskService.removeUserFromTask(taskId, userId);
 
         logger.debug("User with id {} was removed from task with id {}", userId, taskId);
-        return new ResponseEntity<>("User with id "+userId+" isn't assigned to task with id "+taskId, HttpStatus.OK);
+        //TODO: Think, what this controller can return
     }
 }

@@ -34,10 +34,7 @@ public class ProjectController {
         logger.setLevel(Level.DEBUG);
     }
 
-    //TODO: Ask how to encode password to db in config server
-    //TODO: What should return delete request
     //TODO: Add documentation in swagger
-    //TODO: Change parent name to id in DTOs
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable UUID id) {
@@ -94,14 +91,13 @@ public class ProjectController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProject(@PathVariable UUID id) {
+    public void deleteProject(@PathVariable UUID id) {
         projectService.deleteProject(id);
 
         logger.debug("Project with id {} was deleted successfully", id);
-        return new ResponseEntity<String>("Project with id "+id+" deleted successfully", HttpStatus.OK);
     }
 
-    @DeleteMapping("/remove/{projectId}/user")
+    @PutMapping("/remove/{projectId}/user")
     public ResponseEntity<String> removeUserFromProject(@PathVariable UUID projectId,
                                                         @RequestParam UUID userId) {
 

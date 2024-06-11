@@ -2,6 +2,7 @@ package org.itone.trello.taskservice.controller.advice;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import lombok.RequiredArgsConstructor;
 import org.itone.trello.taskservice.controller.ProjectController;
 import org.itone.trello.taskservice.util.exception.NotFoundException;
 import org.itone.trello.taskservice.util.exception.user.EmailAlreadyExistsException;
@@ -16,11 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-    private final Logger logger = (Logger) LoggerFactory.getLogger(ProjectController.class);
-
-    public ControllerAdvice() {
-        logger.setLevel(Level.ERROR);
-    }
+    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(NotFoundException.class)
     ResponseEntity<ErrorMessage> notFoundException(NotFoundException exc) {

@@ -14,9 +14,8 @@ import java.util.regex.Pattern;
 public class UserValidationService {
 
     private static final Pattern EMAIL_FORMAT_PATTERN = Pattern.compile("^\\S+@[a-z]+\\.(com|ru)$");
-    private static final Pattern PASSWORD_FORMAT_PATTERN = Pattern.compile("^[a-zA-z0-9]{5,20}$");
+    private static final Pattern PASSWORD_FORMAT_PATTERN = Pattern.compile("^[a-zA-Z0-9]{5,20}$");
     private static final Pattern NAME_FORMAT_PATTERN = Pattern.compile("\\S{2,20}");
-    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     //return true only in case when email, password and name are valid
     public boolean validate(User user) throws InvalidDataException {

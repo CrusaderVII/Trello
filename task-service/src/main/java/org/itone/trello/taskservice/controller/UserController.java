@@ -1,5 +1,6 @@
 package org.itone.trello.taskservice.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.itone.trello.taskservice.dao.model.Project;
 import org.itone.trello.taskservice.dao.model.Task;
 import org.itone.trello.taskservice.dto.AuthDTO;
@@ -23,21 +24,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("trello/api/v1/user")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    //Create logger with the name corresponding to UserController from Logback using LoggerFactory from Sel4j,
-    //because Logback implements Sel4j interfaces.
-    private final Logger logger = (Logger) LoggerFactory.getLogger(UserController.class);
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-
-        //Set effective (means real level, including influence of parent root logger) level of logger to INFO,
-        //to allow only INFO, WARN, ERROR log requests
-        logger.setLevel(Level.DEBUG);
-    }
+    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
 
     @GetMapping("/get/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {

@@ -8,7 +8,7 @@ public class SecurityConfiguration {
     //It will disable auth to any incoming request, that comes with spring security dependency by default
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
+        return web -> web.ignoring()
                 .anyRequest();
     }
 }

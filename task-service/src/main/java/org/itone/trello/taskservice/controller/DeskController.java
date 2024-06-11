@@ -2,6 +2,7 @@ package org.itone.trello.taskservice.controller;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import lombok.RequiredArgsConstructor;
 import org.itone.trello.taskservice.dto.BoardDTO;
 import org.itone.trello.taskservice.dto.DeskDTO;
 import org.itone.trello.taskservice.dto.creation.DeskCreationDTO;
@@ -19,18 +20,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("trello/api/v1/desk")
+@RequiredArgsConstructor
 public class DeskController {
 
     private final DeskService deskService;
+    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
 
-    //Create logger with the name corresponding to DeskController from Logback using LoggerFactory from Sel4j,
-    //because Logback implements Sel4j interfaces.
-    private final Logger logger = (Logger) LoggerFactory.getLogger(DeskController.class);
-
-    public DeskController(DeskService deskService) {
-        this.deskService = deskService;
-        logger.setLevel(Level.DEBUG);
-    }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<DeskDTO> getDeskById(@PathVariable UUID id) {

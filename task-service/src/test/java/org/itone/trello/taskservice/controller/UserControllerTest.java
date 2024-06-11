@@ -2,7 +2,11 @@ package org.itone.trello.taskservice.controller;
 
 import org.itone.trello.taskservice.dao.UserDAO;
 import org.itone.trello.taskservice.dao.impl.UserDAOImpl;
+import org.itone.trello.taskservice.dao.model.Project;
+import org.itone.trello.taskservice.dao.model.Task;
 import org.itone.trello.taskservice.dao.model.User;
+import org.itone.trello.taskservice.dto.ProjectDTO;
+import org.itone.trello.taskservice.dto.TaskDTO;
 import org.itone.trello.taskservice.dto.UserDTO;
 import org.itone.trello.taskservice.dto.creation.UserCreationDTO;
 import org.itone.trello.taskservice.service.UserService;
@@ -14,7 +18,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.stubbing.OngoingStubbing;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
@@ -85,4 +91,27 @@ class UserControllerTest {
 
         Assertions.assertThrows(InvalidDataException.class, () -> controller.saveUser(user));
     }
+
+    @Test
+    void getProjectsOfUser_RequestIsValid_ReturnsSetOfProjects() {
+        UUID userId = UUID.randomUUID();
+        User user = new User("TEST", "test@yandex.ru", "TESTTEST1");
+        user.setId(userId);
+        UUID project1Id = UUID.randomUUID();
+        UUID project2Id = UUID.randomUUID();
+        Project project1 = new Project("ProjectTEST_1", "test_test");
+        Project project2 = new Project("ProjectTEST_2", "test_test");
+        project1.setId(project1Id);
+        project2.setId(project2Id);
+        Set<Project> projects = Set.of(project1, project2);
+        user.setProjects(projects);
+
+        when(userDAO.findById(userId)).thenReturn(user);
+
+        Set<ProjectDTO> expectedProjectDTOs = Set.of(new ProjectDTO(project1Id, "ProjectTEST_1", "test_test"),
+                new ProjectDTO(project2Id, "ProjectTEST_2", "test_test"));
+        Set<ProjectDTO> realProjectDTOs = controller.getProjectsOfUser(userId).getBody();
+        assertEquals(expectedProjectDTOs, realProjectDTOs);
+    }
+    
 }

@@ -40,7 +40,7 @@ public class ProjectDAOImpl implements ProjectDAO {
         User user = userDAO.findById(userId);
 
         //Add user to a set of users in project. Because project's addUser() method also
-        //encapsulates adding current project to user, we don't need to addProject() method on user object
+        //encapsulates adding current project to user, so we don't need to addProject() method on user object
         project.addUser(user);
 
         //Save changes to project and user entities to DB.

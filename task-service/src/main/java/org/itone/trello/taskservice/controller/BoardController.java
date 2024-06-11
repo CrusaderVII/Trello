@@ -2,6 +2,7 @@ package org.itone.trello.taskservice.controller;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import lombok.RequiredArgsConstructor;
 import org.itone.trello.taskservice.dao.model.Board;
 import org.itone.trello.taskservice.dao.model.Task;
 import org.itone.trello.taskservice.dto.*;
@@ -19,18 +20,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("trello/api/v1/board")
+@RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
-
-    //Create logger with the name corresponding to BoardController from Logback using LoggerFactory from Sel4j,
-    //because Logback implements Sel4j interfaces.
-    private final Logger logger = (Logger) LoggerFactory.getLogger(BoardController.class);
-
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
-        logger.setLevel(Level.DEBUG);
-    }
+    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
 
     @GetMapping("/get/{id}")
     public ResponseEntity<BoardDTO> getBoardById(@PathVariable UUID id) {
